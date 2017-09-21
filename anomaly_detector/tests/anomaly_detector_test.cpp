@@ -22,7 +22,7 @@ void print_anomaly(const std::string& anomaly, double weight, const Anomaly_dete
 int main()
 {
     Kmeans<double> double_kmeans;
-    Anomaly_detector<std::string, Entropy_discriminator, double, Kmeans> detector(double_kmeans, 20, print_anomaly);
+    Anomaly_detector<std::string, Entropy_discriminator, double, Kmeans> detector(double_kmeans, 20, 0.2, print_anomaly);
 
     srand(time(nullptr));
     for(int i=0; i<1000; i++)
