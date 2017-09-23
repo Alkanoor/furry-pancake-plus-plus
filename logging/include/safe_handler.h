@@ -17,9 +17,15 @@ class Safe_handler : public Handler<Safe_handler<Handler> >
         template <typename T>
         static bool write_endline(const T& data) throw();
 
+        template <typename T, typename ... U>
+        static bool write(const T& data, const U& ...) throw();
+
+        template <typename T, typename ... U>
+        static bool write_endline(const T& data, const U& ...) throw();
+
     private:
-        template <typename T, bool (*handler) (const T&)>
-        static bool execute_handler(const T& data) throw();
+        template <typename ... T, bool (*handler) (const T& ...)>
+        static bool execute_handler(const T& ... data) throw();
 
         static std::mutex _io_mutex;
 };

@@ -13,27 +13,33 @@ class Handler
         /**
             All the following public class methods SHOULD NOT be defined again in subclasses (except for beeing wrapped in special cases)
         **/
-        static bool check_initialization_and_react(); throw()
+        static bool check_initialization_and_react() throw();
 
         template <typename T>
-        static bool write(const T& data); throw()          // Basic write operation, should not be overloaded or defined again in children
+        static bool write(const T& data) throw();                         // Basic write operation
 
         template <typename T>
-        static bool write_endline(const T& data); throw()  // Basic write operation with endline added, should not be overloaded or defined again in children
+        static bool write_endline(const T& data) throw();                // Basic write operation with endline added
+
+        template <typename T, typename ... U>
+        static bool write(const T& data, const U& ...) throw();          // Basic write operation with multi input types
+
+        template <typename T, typename ... U>
+        static bool write_endline(const T& data, const U& ...) throw();  // Basic write operation with multi input types with endline added
 
         struct Stream
         {
             template <typename T>
             Stream& operator << (const T& data) throw()   // Method tantamount to write
             {
-                Handler::write<T>(data);
+                Handler<Child>::write<T>(data);
                 return *this;
             }
         };
         static Stream stream;
 
     protected:
-        static bool initialize(); throw()                  // Method that should be overloaded in subclasses in order to initialize ostream
+        static bool initialize() throw();                  // Method that should be overloaded in subclasses in order to initialize ostream
 
         static std::ostream* _ostream;
 };
@@ -79,6 +85,20 @@ bool Handler<Child>::write_endline(const T& data) throw()
 
     (*_ostream)<<data<<std::endl;
     return true;
+}
+
+template <typename Child>
+template <typename T, typename ... U>
+bool Handler<Child>::write(const T& data, const U& ... following) throw()
+{
+    return Handler<Child>::write(data) && Handler<Child>::write(following);
+}
+
+template <typename Child>
+template <typename T, typename ... U>
+bool Handler<Child>::write_endline(const T& data, const U& ... following) throw()
+{
+    return Handler<Child>::write(data) && Handler<Child>::write_endline(following);
 }
 
 template <typename Child>

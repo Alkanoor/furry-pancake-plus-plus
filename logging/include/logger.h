@@ -29,20 +29,20 @@ class Logger : public Logger<Aggregator, Handlers ...>
         }
 
         template <typename T>
-        static bool log(const T& data)
+        static bool log(const T& data) throw()
         {
             return Handler::stream<<Aggregator.aggregate()<<data && Logger<Aggregator, Handlers ...>::log(data);
         }
 
         template <typename T>
-        static bool write(const T& data)
+        static bool write(const T& data) throw()
         {
             bool tmp = Handler::write(Aggregator.aggregate());
             return tmp && Handler::write(data) && Logger<Aggregator, Handlers ...>::write(data);
         }
 
         template <typename T>
-        static bool write_endline(const T& data)
+        static bool write_endline(const T& data) throw()
         {
             bool tmp = Handler::write(Aggregator.aggregate());
             return tmp && Handler::write_endline(data) && Logger<Aggregator, Handlers ...>::write_endline(data);
