@@ -7,8 +7,8 @@
 #include <mutex>
 
 
-template <typename Handler>
-class Safe_handler : public Handler<Safe_handler<Handler> >
+template <typename Sub_handler>
+class Safe_handler : public Handler<Safe_handler<Sub_handler> >
 {
     public:
         template <typename T>
@@ -31,27 +31,27 @@ class Safe_handler : public Handler<Safe_handler<Handler> >
 };
 
 
-template <typename Handler>
-std::mutex Safe_handler<Handler>::_io_mutex;
+template <typename Sub_handler>
+std::mutex Safe_handler<Sub_handler>::_io_mutex;
 
 
-template <typename Handler>
+template <typename Sub_handler>
 template <typename T>
-bool Safe_handler<Handler>::write(const T& data) throw()
+bool Safe_handler<Sub_handler>::write(const T& data) throw()
 {
-    return execute_handler<T, Safe_handler<Handler>::write<T> >(data);
+    return execute_handler<T, Safe_handler<Sub_handler>::write<T> >(data);
 }
 
-template <typename Handler>
+template <typename Sub_handler>
 template <typename T>
-bool Safe_handler<Handler>::write_endline(const T& data) throw()
+bool Safe_handler<Sub_handler>::write_endline(const T& data) throw()
 {
-    return execute_handler<T, Safe_handler<Handler>::write_endline<T> >(data);
+    return execute_handler<T, Safe_handler<Sub_handler>::write_endline<T> >(data);
 }
 
-template <typename Handler>
+template <typename Sub_handler>
 template <typename T, bool (*handler) (const T&)>
-bool Safe_handler<Handler>::execute_handler(const T& data) throw()
+bool Safe_handler<Sub_handler>::execute_handler(const T& data) throw()
 {
     bool ret = false;
     _io_mutex.lock();

@@ -8,8 +8,8 @@
 #include "handler.h"
 
 
-template <std::string Filename, bool trunc_if_exists=false>
-class File_Handler : public Handler<File_Handler>
+template <std::string Filename, bool trunc_if_exists = false>
+class File_Handler : public Ostream_handler<File_Handler<Filename, trunc_if_exists> >
 {
     public:
         static bool initialize() throw()
@@ -30,7 +30,7 @@ class File_Handler : public Handler<File_Handler>
         static std::ofstream _private_ostream;
 };
 
-template <std::string Filename, typename Behaviour_factory, typename Input_type_Factory, Input_type_Factory Bad_File_Behaviour, bool trunc_if_exists=false>
+template <std::string Filename, typename Behaviour_factory, typename Input_type_Factory, Input_type_Factory Bad_File_Behaviour, bool trunc_if_exists = false>
 class File_Handler : public File_Handler<Filename>
 {
     public:
@@ -58,7 +58,7 @@ class File_Handler : public File_Handler<Filename>
 };
 
 
-template <typename Filename_aggregator, bool trunc_if_exists=false>
+template <typename Filename_aggregator, bool trunc_if_exists = false>
 class File_Handler : public File_Handler<"", trunc_if_exists>
 {
     public:
@@ -80,7 +80,7 @@ class File_Handler : public File_Handler<"", trunc_if_exists>
         static std::ofstream _private_ostream;
 };
 
-template <typename Filename_aggregator, typename Behaviour_factory, typename Input_type_Factory, Input_type_Factory Bad_File_Behaviour, bool trunc_if_exists=false>
+template <typename Filename_aggregator, typename Behaviour_factory, typename Input_type_Factory, Input_type_Factory Bad_File_Behaviour, bool trunc_if_exists = false>
 class File_Handler : public File_Handler<Filename_aggregator>
 {
     public:

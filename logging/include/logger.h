@@ -3,7 +3,7 @@
 
 
 template <typename Aggregator>
-class Logger
+class Basic_Logger
 {
     public:
         template <typename T>
@@ -15,7 +15,7 @@ class Logger
 };
 
 template <typename Aggregator, typename Handler, typename ... Handlers>
-class Logger : public Logger<Aggregator, Handlers ...>
+class Basic_Logger : public Basic_Logger<Aggregator, Handlers ...>
 {
     public:
         template <typename T>
@@ -23,43 +23,99 @@ class Logger : public Logger<Aggregator, Handlers ...>
         {
             if(first_iter)
                 os<<Aggregator.aggregate()<<data;
-            Handler::stream<<Aggregator.aggregate()<<data;
-            Logger<Aggregator, Handlers ...>::log(os, data, false);
+            write(data);
+            Basic_Logger<Aggregator, Handlers ...>::log(os, data, false);
             return os;
         }
 
         template <typename T>
         static bool log(const T& data) throw()
         {
-            return Handler::stream<<Aggregator.aggregate()<<data && Logger<Aggregator, Handlers ...>::log(data);
+            return write(data);
         }
 
         template <typename T>
-        static bool write(const T& data) throw()
+        static bool write(const T& data, bool write_aggregate = true) throw()
         {
-            bool tmp = Handler::write(Aggregator.aggregate());
-            return tmp && Handler::write(data) && Logger<Aggregator, Handlers ...>::write(data);
+            bool tmp1;
+            if(write_aggregate)
+                tmp1 = Handler::write(Aggregator.aggregate(), data);
+            else
+                tmp1 = Handler::write(data);
+            bool tmp2 = Basic_Logger<Aggregator, Handlers ...>::write(data);
+            return tmp1 && tmp2;
         }
 
         template <typename T>
-        static bool write_endline(const T& data) throw()
+        static bool write_endline(const T& data, bool write_aggregate = true) throw()
         {
-            bool tmp = Handler::write(Aggregator.aggregate());
-            return tmp && Handler::write_endline(data) && Logger<Aggregator, Handlers ...>::write_endline(data);
+            bool tmp1 = Handler::write_endline(Aggregator.aggregate(), data);
+            bool tmp2 = Basic_Logger<Aggregator, Handlers ...>::write_endline(data);
+            return tmp1 && tmp2;
         }
 
-        struct Stream
+        template <typename T>
+        Basic_Logger<Aggregator, Handlers ...>& operator << (const T& data) throw()
         {
-            template <typename T>
-            Stream& operator << (const T& data) throw()
+            Basic_Logger<Aggregator, Handlers ...>::write(data);
+            return *this;
+        }
+
+        static Basic_Logger<Aggregator, Handlers ...> stream;
+};
+
+template <typename Aggregator, typename Handler, typename ... Handlers>
+class Logger : public Basic_Logger<Aggregator, Handler, Handlers ...>
+{};
+
+template <typename Aggregator, typename Handler, typename ... Handlers>
+class Logger<Aggregator, Debug_handler<Handler>, Handlers ...>: public Basic_Logger<Aggregator, Debug_handler<Handler>, Handlers ...>
+{
+    public:
+        static void debug(bool debug = true)
+        {
+            _debug = debug;
+
+        }
+
+        template <typename T>
+        static bool write(const T& data, bool write_aggregate = true) throw()
+        {
+            bool tmp1 = Logger<Aggregator, Handlers ...>::write(data, write_aggregate);
+            if(_debug)
             {
-                Handler::write(Aggregator.aggregate())
-                Handler::write(data);
-                Logger<Aggregator, Handlers ...>::stream::write(data);
-                return *this;
+                bool tmp2 = Debug_handler<Handler>::write(data);
+                return tmp1 && tmp2;
             }
-        };
-        static Stream stream;
+            else
+                return tmp1;
+        }
+
+        template <typename T>
+        static bool write_endline(const T& data, bool write_aggregate = true) throw()
+        {
+            bool tmp1 = Logger<Aggregator, Handlers ...>::write_endline(data, write_aggregate);
+            if(_debug)
+            {
+                bool tmp2 = Debug_handler<Handler>::write_endline(data);
+                return tmp1 && tmp2;
+            }
+            else
+                return tmp1;
+        }
+
+    private:
+        static bool _debug;
+};
+
+template <typename Aggregator, typename Handler, size_t N, typename ... Handlers>
+class Logger<Aggregator, Level_Logger<Handler, N>, Handlers ...>: public Basic_Logger<Aggregator, Level_Logger<Handler, N>, Handlers ...>
+{
+    public:
+        static void set_minimum_level(int min_level);
+
+    private:
+        static int _min_level;
 };
 
 

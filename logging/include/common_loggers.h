@@ -12,10 +12,10 @@
 
 static const std::string base_dir = "logs/";
 
-typedef Logger<Date_aggregator, Stdout_handler> basic_timed_logger;
+typedef Logger<Basic_date_aggregator, Stdout_handler> basic_timed_logger;
 typedef Logger<String_aggregator<"">, Stdout_handler> basic_logger;
 typedef Logger<String_aggregator<"">, Stderr_handler> basic_error_logger;
-typedef Logger<Date_aggregator, Safe_handler<Stdout_handler> > basic_thread_safe_timed_logger;
+typedef Logger<Basic_date_aggregator, Safe_handler<Stdout_handler> > basic_thread_safe_timed_logger;
 typedef Logger<String_aggregator<"">, Safe_handler<Stdout_handler> > basic_thread_safe_logger;
 typedef Logger<String_aggregator<"">, Safe_handler<Stderr_handler> > basic_thread_safe_error_logger;
 
@@ -50,10 +50,10 @@ typedef Logger<Date_aggregator<String_aggregator<"[Error]"> >,
                Stderr_handler,
                Safe_handler<File_Handler<String_aggregator<base_dir+"main_errors.log">, false, Open_failed_behaviour_factory, std::string, "throw"> > > thread_safe_error_to_keep_logger;
 
-typedef Logger<String_aggregator<"[Debug]", Date_aggregator>,
+typedef Logger<String_aggregator<"[Debug]", Basic_date_aggregator>,
                Stdout_handler,
                File_Handler<String_aggregator<base_dir+"current_debug.log">, true, Open_failed_behaviour_factory, std::string, "log"> > debug_logger;
-typedef Logger<String_aggregator<"[Debug]", Date_aggregator>,
+typedef Logger<String_aggregator<"[Debug]", Basic_date_aggregator>,
                Stdout_handler,
                Safe_handler<File_Handler<String_aggregator<base_dir+"current_debug.log">, true, Open_failed_behaviour_factory, std::string, "log"> > > thread_safe_debug_logger;
 

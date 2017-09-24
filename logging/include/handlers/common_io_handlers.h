@@ -23,7 +23,7 @@ class Stderr_handler : public Handler<Stderr_handler>
         static bool initialize()
         {
             _ostream = &std::cerr;
-            return false;
+            return true;
         }
 };
 
