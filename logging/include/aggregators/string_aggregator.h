@@ -51,37 +51,26 @@ class _impl_String_concatenator<head, Aggregator, typename std::enable_if<has_ag
 
 
 
-template <const char*, const char*, typename ... Args>
-class String_aggregator;
-
-template <const char* head, const char* tail>
-class String_aggregator<head, tail>
+template <const char* head, const char* tail, class Aggregator, class Enable = void>
+class _impl_String_aggregator : public String_concatenator<head, Aggregator>
 {
     public:
-        static std::string aggregate(const std::string& input)
-        {
-            return String_concatenator<head>::aggregate(input);
-        }
-
         static std::string aggregate_tail(const std::string& input)
         {
             return input+tail;
         }
 };
 
+template <const char* head, const char* tail, typename Aggregator = void>
+class String_aggregator : public _impl_String_aggregator<head, tail, Aggregator>
+{};
 
-template <const char* head, const char* tail, class Aggregator, class Enable = void>
-class _impl_String_aggregator;
 
 template <const char* head, const char* tail, class Aggregator>
-class _impl_String_aggregator<head, tail, Aggregator, typename std::enable_if<has_aggregate_tail_function<Aggregator>::value>::type>
+class _impl_String_aggregator<head, tail, Aggregator, typename std::enable_if<has_aggregate_tail_function<Aggregator>::value>::type> :
+        public String_concatenator<head, Aggregator>
 {
     public:
-        static std::string aggregate(const std::string& input)
-        {
-            return head+Aggregator::aggregate(input);
-        }
-
         static std::string aggregate_tail(const std::string& input)
         {
             return Aggregator::aggregate_tail(input)+tail;
@@ -90,18 +79,14 @@ class _impl_String_aggregator<head, tail, Aggregator, typename std::enable_if<ha
 
 template <const char* head, const char* tail, class Aggregator>
 class _impl_String_aggregator<head, tail, Aggregator, typename std::enable_if<!has_aggregate_tail_function<Aggregator>::value>::type> :
-        public String_aggregator<head, tail>, String_concatenator<head, Aggregator>
+        public String_concatenator<head, Aggregator>
 {
     public:
-        static std::string aggregate(const std::string& input)
+        static std::string aggregate_tail(const std::string& input)
         {
-            return head+Aggregator::aggregate(input);
+            return input+tail;
         }
 };
-
-template <const char* head, const char* tail, typename Aggregator>
-class String_aggregator<head, tail, Aggregator> : public _impl_String_aggregator<head, tail, Aggregator>
-{};
 
 
 #endif
