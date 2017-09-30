@@ -8,7 +8,7 @@
 #include "aggregator.h"
 
 
-template <class Aggregator, class Enable = void>
+template <typename Aggregator, typename Enable = void>
 class _impl_Date_aggregator
 {
     public:
@@ -30,15 +30,7 @@ class _impl_Date_aggregator
         }
 };
 
-template <typename Aggregator = void>
-class Date_aggregator : public _impl_Date_aggregator<Aggregator>
-{};
-
-typedef Date_aggregator<void> Basic_date_aggregator;
-
-
-
-template <class Aggregator>
+template <typename Aggregator>
 class _impl_Date_aggregator<Aggregator, typename std::enable_if<has_aggregate_tail_function<Aggregator>::value && has_aggregate_function<Aggregator>::value>::type> :
         public _impl_Date_aggregator<void>
 {
@@ -54,7 +46,7 @@ class _impl_Date_aggregator<Aggregator, typename std::enable_if<has_aggregate_ta
         }
 };
 
-template <class Aggregator>
+template <typename Aggregator>
 class _impl_Date_aggregator<Aggregator, typename std::enable_if<!has_aggregate_tail_function<Aggregator>::value && has_aggregate_function<Aggregator>::value>::type> :
         public _impl_Date_aggregator<void>
 {
@@ -64,6 +56,18 @@ class _impl_Date_aggregator<Aggregator, typename std::enable_if<!has_aggregate_t
             return "["+date()+"]"+Aggregator::aggregate(input);
         }
 };
+
+
+
+template <typename Aggregator = void>
+class Date_aggregator : public _impl_Date_aggregator<Aggregator>
+{};
+
+template <>
+class Date_aggregator<> : public _impl_Date_aggregator<void>
+{};
+
+typedef Date_aggregator<void> Basic_date_aggregator;
 
 
 #endif

@@ -26,11 +26,11 @@ void reacts(const std::string& id, const std::string& filename) throw()
     {
         try
         {
-            error_logger::write_endline("Unable to open file "+filename);
+            safe_error_logger::write_endline("Unable to open file "+filename);
         }
         catch(...)
         {
-            fatal_error_logger::write_endline("Unable to open error logging file "+error_logger::get_filename());
+            fatal_error_logger::write_endline("Unable to open error logging file (please check that path of safe_error_logger is ok)");
             exit(1);
         }
     }
@@ -38,11 +38,11 @@ void reacts(const std::string& id, const std::string& filename) throw()
     {
         try
         {
-            error_logger::write_endline("Unable to open file "+filename);
+            safe_error_logger::write_endline("Unable to open file "+filename);
         }
         catch(...)
         {
-            fatal_error_logger::write_endline("Unable to open error logging file "+error_logger::get_filename());
+            fatal_error_logger::write_endline("Unable to open error logging file (please check that path of safe_error_logger is ok)");
             exit(1);
         }
 
@@ -52,11 +52,11 @@ void reacts(const std::string& id, const std::string& filename) throw()
     {
         try
         {
-            error_logger::write_endline("Unable to open file "+filename);
+            safe_error_logger::write_endline("Unable to open file "+filename);
         }
         catch(...)
         {
-            fatal_error_logger::write_endline("Unable to open error logging file "+error_logger::get_filename());
+            fatal_error_logger::write_endline("Unable to open error logging file (please check that path of safe_error_logger is ok)");
             exit(1);
         }
         exit(1);
@@ -65,11 +65,11 @@ void reacts(const std::string& id, const std::string& filename) throw()
     {
         try
         {
-            error_logger::write_endline("Undefined behaviour specified, please check possible behaviours that can be specified to Open_failed_behaviour_factory");
+            safe_error_logger::write_endline("Undefined behaviour specified, please check possible behaviours that can be specified to Open_failed_behaviour_factory");
         }
         catch(...)
         {
-            fatal_error_logger::write_endline("Unable to open error logging file "+error_logger::get_filename());
+            fatal_error_logger::write_endline("Unable to open error logging file (please check that path of safe_error_logger is ok)");
             exit(1);
         }
     }

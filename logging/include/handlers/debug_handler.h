@@ -3,7 +3,7 @@
 
 
 template <typename Sub_handler>
-class Debug_handler : public Handler<Debug_handler<Sub_handler> >
+class Debug_handler : public Handler<Sub_handler>
 {
     public:
         template <typename T>
@@ -12,37 +12,61 @@ class Debug_handler : public Handler<Debug_handler<Sub_handler> >
         template <typename T>
         static bool write_endline(const T& data) throw();
 
-    private:
-        static bool initialize() throw();
+        static void enable();
+        static void disable();
+        static void set_debug(bool debug = true);
 
+    private:
         static bool _debug;
 };
 
 
 template <typename Sub_handler>
-bool Debug_handler::_debug = false;
+bool Debug_handler<Sub_handler>::_debug = true;
 
 
 template <typename Sub_handler>
 template <typename T>
 bool Debug_handler<Sub_handler>::write(const T& data) throw()
 {
+    if(!Handler<Sub_handler>::check_initialization_and_react())
+        return false;
+
     if(_debug)
-        Sub_handler::write(data);
+        return Sub_handler::write(data);
+
+    return true;
 }
 
 template <typename Sub_handler>
 template <typename T>
 bool Debug_handler<Sub_handler>::write_endline(const T& data) throw()
 {
+    if(!Handler<Sub_handler>::check_initialization_and_react())
+        return false;
+
     if(_debug)
-        Sub_handler::write_endline(data);
+        return Sub_handler::write_endline(data);
+
+    return true;
 }
 
 template <typename Sub_handler>
-bool Debug_handler<Sub_handler>::initialize() throw()
+void Debug_handler<Sub_handler>::enable()
 {
-    return Sub_handler::check_initialization_and_react();
+    _debug = true;
+}
+
+template <typename Sub_handler>
+void Debug_handler<Sub_handler>::disable()
+{
+    _debug = false;
+}
+
+template <typename Sub_handler>
+void Debug_handler<Sub_handler>::set_debug(bool debug)
+{
+    _debug = debug;
 }
 
 

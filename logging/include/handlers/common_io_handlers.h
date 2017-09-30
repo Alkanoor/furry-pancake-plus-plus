@@ -4,10 +4,10 @@
 
 #include <iostream>
 
-#include "handler.h"
+#include "ostream_handler.h"
 
 
-class Stdout_handler : public Handler<Stdout_handler>
+class Stdout_handler : public Ostream_handler<Stdout_handler>
 {
     public:
         static bool initialize()
@@ -17,7 +17,7 @@ class Stdout_handler : public Handler<Stdout_handler>
         }
 };
 
-class Stderr_handler : public Handler<Stderr_handler>
+class Stderr_handler : public Ostream_handler<Stderr_handler>
 {
     public:
         static bool initialize()

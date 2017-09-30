@@ -2,60 +2,76 @@
 #define COMMON_LOGGERS_H
 
 
+#include "aggregators/terminal_color_aggregator.h"
 #include "open_failed_behaviour_factory.h"
-#include "common_io_handlers.h"
-#include "Safe_handler.h"
-#include "file_handler.h"
-#include "aggregator.h"
+#include "aggregators/string_aggregator.h"
+#include "handlers/common_io_handlers.h"
+#include "aggregators/date_aggregator.h"
+#include "aggregators/aggregator.h"
+#include "handlers/safe_handler.h"
+#include "handlers/file_handler.h"
 #include "logger.h"
 
 
-static const std::string base_dir = "logs/";
+static constexpr const char base_dir[] = "logs/";
 
-typedef Logger<Basic_date_aggregator, Stdout_handler> basic_timed_logger;
-typedef Logger<String_aggregator<"">, Stdout_handler> basic_logger;
-typedef Logger<String_aggregator<"">, Stderr_handler> basic_error_logger;
-typedef Logger<Basic_date_aggregator, Safe_handler<Stdout_handler> > basic_thread_safe_timed_logger;
-typedef Logger<String_aggregator<"">, Safe_handler<Stdout_handler> > basic_thread_safe_logger;
-typedef Logger<String_aggregator<"">, Safe_handler<Stderr_handler> > basic_thread_safe_error_logger;
+static constexpr const char fatal[] = "[Fatal]";
+static constexpr const char error[] = "[Error]";
+static constexpr const char warning[] = "[Warning]";
+static constexpr const char info[] = "[Info]";
+static constexpr const char debug[] = "[Debug]";
+static constexpr const char fatal_filename[] = "fatal_errors.log";
+static constexpr const char main_errors_filename[] = "main_errors.log";
+static constexpr const char error_filename[] = "_errors.log";
+static constexpr const char warning_filename[] = "_warning.log";
+static constexpr const char info_filename[] = "_info.log";
+static constexpr const char debug_filename[] = "current_debug.log";
 
-typedef Logger<String_aggregator<"[Fatal]">,
-               Safe_handler<File_Handler<String_aggregator<"fatal_errors.log">, false, Open_failed_behaviour_factory, std::string, "throw"> > > fatal_error_logger;
 
-typedef Logger<Date_aggregator<String_aggregator<"[Error]"> >,
+typedef Logger<Date_aggregator<>, Stdout_handler>                       basic_timed_logger;
+typedef Logger<Stdout_handler>                                          basic_logger;
+typedef Logger<Stderr_handler>                                          basic_error_logger;
+typedef Logger<Date_aggregator<>, Safe_handler<Stdout_handler> >        basic_thread_safe_timed_logger;
+typedef Logger<Safe_handler<Stdout_handler> >                           basic_thread_safe_logger;
+typedef Logger<Safe_handler<Stderr_handler> >                           basic_thread_safe_error_logger;
+
+typedef Logger<Date_aggregator<String_header<fatal> >,
+               Safe_handler<File_handler_fail_behaviour<fatal_filename, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::throw_keyword> > > fatal_error_logger;
+
+typedef Logger<Date_aggregator<String_header<error> >,
                Stderr_handler,
-               File_Handler<String_aggregator<base_dir, Date_aggregator<String_aggregator<"_errors.log"> > >, true, Open_failed_behaviour_factory, std::string, "throw"> > error_logger;
-typedef Logger<Date_aggregator<String_aggregator<"[Error]"> >,
+               Dynamic_file_handler_fail_behaviour<String_header<base_dir, Date_aggregator<String_header<error_filename> > >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::throw_keyword, true> > error_logger;
+typedef Logger<Date_aggregator<String_header<error> >,
                Stderr_handler,
-               Safe_handler<File_Handler<String_aggregator<base_dir, Date_aggregator<String_aggregator<"_errors.log"> > >, true, Open_failed_behaviour_factory, std::string, "throw"> > > thread_safe_error_logger;
+               Safe_handler<Dynamic_file_handler_fail_behaviour<String_header<base_dir, Date_aggregator<String_header<error_filename> > >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::throw_keyword, true> > > safe_error_logger;
 
-typedef Logger<Date_aggregator<String_aggregator<"[Warning]"> >,
+typedef Logger<Date_aggregator<String_header<warning> >,
                Stderr_handler,
-               File_Handler<String_aggregator<base_dir, Date_aggregator<String_aggregator<"_warning.log"> > >, true, Open_failed_behaviour_factory, std::string, "log"> > warning_logger;
-typedef Logger<Date_aggregator<String_aggregator<"[Warning]"> >,
+               Dynamic_file_handler_fail_behaviour<String_header<base_dir, Date_aggregator<String_header<warning_filename> > >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::log_keyword, true> > warning_logger;
+typedef Logger<Date_aggregator<String_header<warning> >,
                Stderr_handler,
-               Safe_handler<File_Handler<String_aggregator<base_dir, Date_aggregator<String_aggregator<"_warning.log"> > >, true, Open_failed_behaviour_factory, std::string, "log"> > > thread_safe_warning_logger;
+               Safe_handler<Dynamic_file_handler_fail_behaviour<String_header<base_dir, Date_aggregator<String_header<warning_filename> > >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::log_keyword, true> > > thread_safe_warning_logger;
 
-typedef Logger<String_aggregator<"[Info]">,
+typedef Logger<Date_aggregator<String_header<info> >,
+              Stderr_handler,
+              Dynamic_file_handler_fail_behaviour<String_header<base_dir, Date_aggregator<String_header<info_filename> > >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::log_keyword, true> > info_logger;
+typedef Logger<Date_aggregator<String_header<info> >,
+              Stderr_handler,
+              Safe_handler<Dynamic_file_handler_fail_behaviour<String_header<base_dir, Date_aggregator<String_header<info_filename> > >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::log_keyword, true> > > thread_safe_info_logger;
+
+typedef Logger<Date_aggregator<String_header<error> >,
+               Stderr_handler,
+               Dynamic_file_handler_fail_behaviour<String_header<base_dir, String_header<main_errors_filename> >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::throw_keyword> > error_to_keep_logger;
+typedef Logger<Date_aggregator<String_header<error> >,
+               Stderr_handler,
+               Safe_handler<Dynamic_file_handler_fail_behaviour<String_header<base_dir, String_header<main_errors_filename> >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::log_keyword> > > thread_safe_error_to_keep_logger;
+
+typedef Logger<String_header<debug, Date_aggregator<>>,
                Stdout_handler,
-               File_Handler<String_aggregator<base_dir, Date_aggregator<String_aggregator<"_info.log"> > >, true, Open_failed_behaviour_factory, std::string, "log"> > info_logger;
-typedef Logger<String_aggregator<"[Info]">,
+               Dynamic_file_handler_fail_behaviour<String_header<base_dir, String_header<debug_filename> >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::log_keyword, true> > debug_logger;
+typedef Logger<String_header<debug, Date_aggregator<>>,
                Stdout_handler,
-               Safe_handler<File_Handler<String_aggregator<base_dir, Date_aggregator<String_aggregator<"_info.log"> > >, true, Open_failed_behaviour_factory, std::string, "log"> > > thread_safe_info_logger;
-
-typedef Logger<Date_aggregator<String_aggregator<"[Error]"> >,
-               Stderr_handler,
-               File_Handler<String_aggregator<base_dir+"main_errors.log">, false, Open_failed_behaviour_factory, std::string, "throw"> > error_to_keep_logger;
-typedef Logger<Date_aggregator<String_aggregator<"[Error]"> >,
-               Stderr_handler,
-               Safe_handler<File_Handler<String_aggregator<base_dir+"main_errors.log">, false, Open_failed_behaviour_factory, std::string, "throw"> > > thread_safe_error_to_keep_logger;
-
-typedef Logger<String_aggregator<"[Debug]", Basic_date_aggregator>,
-               Stdout_handler,
-               File_Handler<String_aggregator<base_dir+"current_debug.log">, true, Open_failed_behaviour_factory, std::string, "log"> > debug_logger;
-typedef Logger<String_aggregator<"[Debug]", Basic_date_aggregator>,
-               Stdout_handler,
-               Safe_handler<File_Handler<String_aggregator<base_dir+"current_debug.log">, true, Open_failed_behaviour_factory, std::string, "log"> > > thread_safe_debug_logger;
+               Safe_handler<Dynamic_file_handler_fail_behaviour<String_header<base_dir, String_header<debug_filename> >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::log_keyword, true> > > thread_safe_debug_logger;
 
 // TODO : implement colored leveled logger
 

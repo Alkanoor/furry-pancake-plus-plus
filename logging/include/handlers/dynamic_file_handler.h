@@ -5,6 +5,7 @@
 #include "pool_ostream_handler.h"
 
 
+template <typename Behaviour_factory, typename Input_type_Factory, Input_type_Factory Bad_File_Behaviour>
 class Dynamic_file_handler : public Handler<Dynamic_file_handler>
 {
     template <typename Id_type, Id_type id>
@@ -13,13 +14,28 @@ class Dynamic_file_handler : public Handler<Dynamic_file_handler>
     public:
         Dynamic_file_handler(const std::string& filename = "", bool trunc_if_exists = true);
 
-        bool check_initialization_and_react() throw();
+        bool reset(const std::string& filename, bool trunc_if_exists = true);
+
+
+        template <typename T>
+        bool write(const T& data) throw();
+
+        template <typename T>
+        bool write_endline(const T& data) throw();
+
+        template <typename T, typename ... U>
+        bool write(const T& data, const U& ...) throw();
+
+        template <typename T, typename ... U>
+        bool write_endline(const T& data, const U& ...) throw();
+
 
     private:
         const std::string& _filename;
 
-        std::ofstream _stream;
         std::ostream** get_ostream_pointer() const;
+
+        static bool initialize() throw();
 };
 
 

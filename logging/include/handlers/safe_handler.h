@@ -24,8 +24,8 @@ class Safe_handler : public Handler<Safe_handler<Sub_handler> >
         static bool write_endline(const T& data, const U& ...) throw();
 
     private:
-        template <typename ... T, bool (*handler) (const T& ...)>
-        static bool execute_handler(const T& ... data) throw();
+        template <typename ... T>
+        static bool execute_handler(bool (*handler) (T&& ...), T&& ... data) throw();
 
         static std::mutex _io_mutex;
 };
@@ -39,25 +39,25 @@ template <typename Sub_handler>
 template <typename T>
 bool Safe_handler<Sub_handler>::write(const T& data) throw()
 {
-    return execute_handler<T, Safe_handler<Sub_handler>::write<T> >(data);
+    return execute_handler<T>(Safe_handler<Sub_handler>::write<T>, data);
 }
 
 template <typename Sub_handler>
 template <typename T>
 bool Safe_handler<Sub_handler>::write_endline(const T& data) throw()
 {
-    return execute_handler<T, Safe_handler<Sub_handler>::write_endline<T> >(data);
+    return execute_handler<T>(&Safe_handler<Sub_handler>::write_endline<T>, data);
 }
 
 template <typename Sub_handler>
-template <typename T, bool (*handler) (const T&)>
-bool Safe_handler<Sub_handler>::execute_handler(const T& data) throw()
+template <typename ... T>
+bool Safe_handler<Sub_handler>::execute_handler(bool (*handler) (T&& ...), T&& ... data) throw()
 {
     bool ret = false;
     _io_mutex.lock();
     try
     {
-        ret = handler(data);
+        ret = handler(std::forward<T>(data)...);
     }
     catch(...)
     {

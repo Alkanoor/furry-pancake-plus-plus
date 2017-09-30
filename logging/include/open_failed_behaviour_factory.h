@@ -21,6 +21,15 @@ class Open_failed_behaviour_factory
 {
     public:
         static void reacts(const std::string& id, const std::string& filename) throw();
+
+        static constexpr const char exit_keyword[] = "exit";
+        static constexpr const char print_and_exit_keyword[] = "print_and_exit";
+        static constexpr const char print_keyword[] = "print";
+        static constexpr const char throw_keyword[] = "throw";
+        static constexpr const char print_and_throw_keyword[] = "print_and_throw";
+        static constexpr const char log_keyword[] = "log";
+        static constexpr const char log_and_throw_keyword[] = "log_and_throw";
+        static constexpr const char log_and_exit_keyword[] = "log_and_exit";
 };
 
 

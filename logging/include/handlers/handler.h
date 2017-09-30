@@ -10,19 +10,13 @@ class Handler
 {
     public:
         /**
-            The 4 following public class write methods SHOULD be defined again in subclasses (in this class they throw runtime error)
+            The 2 following public class write methods SHOULD be defined again in subclasses (in this class they throw runtime error)
         **/
-        template <typename T>
-        static bool write(const T& data) throw();                        // Basic write operation
-
-        template <typename T>
-        static bool write_endline(const T& data) throw();                // Basic write operation with endline added
+        template <typename T, typename ... U>
+        static bool write(const T& data, const U& ... following) throw();          // Basic write operation with multi input types
 
         template <typename T, typename ... U>
-        static bool write(const T& data, const U& ...) throw();          // Basic write operation with multi input types
-
-        template <typename T, typename ... U>
-        static bool write_endline(const T& data, const U& ...) throw();  // Basic write operation with multi input types with endline added
+        static bool write_endline(const T& data, const U& ... following) throw();  // Basic write operation with multi input types with endline added
 
 
         template <typename T>
@@ -50,25 +44,13 @@ bool Handler<Child>::_initialized = false;
 
 
 template <typename Child>
-template <typename T>
-bool Handler<Child>::write(const T& data) throw()
-{
-    throw std::runtime_error("Error: Write operation on basic Handler has no meaning.");
-}
-
-template <typename Child>
-template <typename T>
-bool Handler<Child>::write_endline(const T& data) throw()
-{
-    throw std::runtime_error("Error: Write with endline operation on basic Handler has no meaning.");
-}
-
-template <typename Child>
 template <typename T, typename ... U>
 bool Handler<Child>::write(const T& data, const U& ... following) throw()
 {
-    bool tmp1 = Handler<Child>::write(data);
-    bool tmp2 = Handler<Child>::write(following ...);
+    bool tmp1 = Child::write(data);
+    bool tmp2 = true;
+    if(sizeof...(following))
+        tmp2 = Handler<Child>::write(following ...);
     return tmp1 && tmp2;
 }
 
@@ -76,8 +58,10 @@ template <typename Child>
 template <typename T, typename ... U>
 bool Handler<Child>::write_endline(const T& data, const U& ... following) throw()
 {
-    bool tmp1 = Handler<Child>::write_endline(data);
-    bool tmp2 = Handler<Child>::write_endline(following ...);
+    bool tmp1 = Child::write_endline(data);
+    bool tmp2 = true;
+    if(sizeof...(following))
+        tmp2 = Handler<Child>::write_endline(following ...);
     return tmp1 && tmp2;
 }
 

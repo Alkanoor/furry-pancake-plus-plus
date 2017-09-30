@@ -3,6 +3,7 @@
 
 
 #include <functional>
+#include <ostream>
 #include <vector>
 
 #include "handler.h"
@@ -27,7 +28,7 @@ class Pool_ostream_handler : public Handler<Pool_ostream_handler<Id_type, id> >
     private:
         static std::vector<std::function<bool()> > _initialisation_functions;
         static std::vector<int> _initialized_sub_handlers;
-        static std::vector<ostream**> _streams;
+        static std::vector<std::ostream**> _streams;
 };
 
 
@@ -38,7 +39,7 @@ template <typename Id_type, Id_type id>
 std::vector<int> Pool_ostream_handler<Id_type, id>::_initialized_sub_handlers;
 
 template <typename Id_type, Id_type id>
-std::vector<ostream**> Pool_ostream_handler<Id_type, id>::_streams;
+std::vector<std::ostream**> Pool_ostream_handler<Id_type, id>::_streams;
 
 
 template <typename Id_type, Id_type id>
