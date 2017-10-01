@@ -15,10 +15,10 @@ class Ostream_handler : public Handler<Child>
 
     public:
         template <typename ... T>
-        static bool write(const T& ... data) throw();
+        static bool _impl_write(T&& ... data) throw();
 
         template <typename ... T>
-        static bool write_endline(const T& ... data) throw();
+        static bool _impl_write_endline(T&& ... data) throw();
 
     protected:
         static bool initialize() throw();
@@ -26,12 +26,8 @@ class Ostream_handler : public Handler<Child>
         static std::ostream* _ostream;
         static std::ostream** get_ostream_pointer();
 
-    private:
-        template <typename T, typename ... U>
-        static bool write_private(bool first_iter, const T& data, const U& ... following) throw();
-
-        template <typename T, typename ... U>
-        static bool write_endline_private(bool first_iter, const T& data, const U& ... following) throw();
+        template <size_t N, typename ... T>
+        class _impl_detail;
 };
 
 
@@ -41,45 +37,72 @@ std::ostream* Ostream_handler<Child>::_ostream = nullptr;
 
 template <typename Child>
 template <typename ... T>
-bool Ostream_handler<Child>::write(const T& ... data) throw()
+bool Ostream_handler<Child>::_impl_write(T&& ... data) throw()
 {
-    return write_private(true, data...);
+    return _impl_detail<sizeof... (T), T ...>::_impl_write(_ostream, std::forward<T>(data) ...);
 }
 
 template <typename Child>
 template <typename ... T>
-bool Ostream_handler<Child>::write_endline(const T& ... data) throw()
+bool Ostream_handler<Child>::_impl_write_endline(T&& ... data) throw()
 {
-    return write_endline_private(true, data...);
+    return _impl_detail<sizeof... (T), T ...>::_impl_write_endline(_ostream, std::forward<T>(data) ...);
 }
+
+
+template <typename Child>
+template <size_t N, typename ... T>
+class Ostream_handler<Child>::_impl_detail
+{
+    public:
+        static bool _impl_write(std::ostream* ostream, T&& ... data) throw()
+        {
+            (void)ostream;
+            return true;
+        }
+
+        static bool _impl_write_endline(std::ostream* ostream, T&& ... data) throw()
+        {
+            (void)ostream;
+            return true;
+        }
+};
+
+template <typename Child>
+template <size_t N, typename T, typename ... U>
+class Ostream_handler<Child>::_impl_detail<N, T, U ...>
+{
+    public:
+        static bool _impl_write(std::ostream* ostream, T&& data, U&& ... following) throw()
+        {
+            (*ostream)<<data;
+            return _impl_detail<N-1, U ...>::_impl_write(ostream, std::forward<U>(following) ...);
+        }
+
+        static bool _impl_write_endline(std::ostream* ostream, T&& data, U&& ... following) throw()
+        {
+            (*ostream)<<data;
+            return _impl_detail<N-1, U ...>::_impl_write_endline(ostream, std::forward<U>(following) ...);
+        }
+};
 
 template <typename Child>
 template <typename T, typename ... U>
-bool Ostream_handler<Child>::write_private(bool first_iter, const T& data, const U& ... following) throw()
+class Ostream_handler<Child>::_impl_detail<0, T, U ...>
 {
-    if(first_iter && !Handler<Child>::check_initialization_and_react())
-        return false;
+    public:
+        static bool _impl_write(std::ostream* ostream, T&& data, U&& ... following) throw()
+        {
+            (*ostream)<<data;
+            return true;
+        }
 
-    (*_ostream)<<data;
-    if(sizeof...(following))
-        Ostream_handler<Child>::write(false, following ...);
-    return true;
-}
-
-template <typename Child>
-template <typename T, typename ... U>
-bool Ostream_handler<Child>::write_endline_private(bool first_iter, const T& data, const U& ... following) throw()
-{
-    if(first_iter && !Handler<Child>::check_initialization_and_react())
-        return false;
-
-    (*_ostream)<<data;
-    if(sizeof...(following))
-        Ostream_handler<Child>::write_endline(false, following ...);
-    else
-        (*_ostream)<<std::endl;
-    return true;
-}
+        static bool _impl_write_endline(std::ostream* ostream, T&& data, U&& ... following) throw()
+        {
+            (*ostream)<<data<<std::endl;
+            return true;
+        }
+};
 
 
 template <typename Child>
@@ -93,5 +116,6 @@ std::ostream** Ostream_handler<Child>::get_ostream_pointer()
 {
     return &_ostream;
 }
+
 
 #endif

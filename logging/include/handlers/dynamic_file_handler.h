@@ -16,18 +16,11 @@ class Dynamic_file_handler : public Handler<Dynamic_file_handler>
 
         bool reset(const std::string& filename, bool trunc_if_exists = true);
 
+        template <typename ... T>
+        bool write(T&& ... data) throw();
 
-        template <typename T>
-        bool write(const T& data) throw();
-
-        template <typename T>
-        bool write_endline(const T& data) throw();
-
-        template <typename T, typename ... U>
-        bool write(const T& data, const U& ...) throw();
-
-        template <typename T, typename ... U>
-        bool write_endline(const T& data, const U& ...) throw();
+        template <typename ... T>
+        bool write_endline(T&& ... data) throw();
 
 
     private:

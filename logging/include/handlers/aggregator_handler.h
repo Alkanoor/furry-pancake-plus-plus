@@ -13,28 +13,39 @@ class Aggregator_handler<First_handler, Handlers ...> : public Handler<Aggregato
 {
     public:
         template <typename ... T>
-        static bool write(const T& ... data) throw();
+        static bool _impl_write(T&& ... data) throw();
 
         template <typename ... T>
-        static bool write_endline(const T& ... data) throw();
+        static bool _impl_write_endline(T&& ... data) throw();
+
+    protected:
+        static bool initialize() throw();
 };
 
 
 template <typename First_handler, typename ... Handlers>
 template <typename ... T>
-bool Aggregator_handler<First_handler, Handlers...>::write(const T& ... data) throw()
+bool Aggregator_handler<First_handler, Handlers ...>::_impl_write(T&& ... data) throw()
 {
-    bool tmp1 = First_handler::write(data ...);
-    bool tmp2 = Aggregator_handler<Handlers...>::write(data ...);
+    bool tmp1 = First_handler::_impl_write(std::forward<T>(data) ...);
+    bool tmp2 = Aggregator_handler<Handlers ...>::_impl_write(std::forward<T>(data) ...);
     return tmp1 && tmp2;
 }
 
 template <typename First_handler, typename ... Handlers>
 template <typename ... T>
-bool Aggregator_handler<First_handler, Handlers...>::write_endline(const T& ... data) throw()
+bool Aggregator_handler<First_handler, Handlers ...>::_impl_write_endline(T&& ... data) throw()
 {
-    bool tmp1 = First_handler::write_endline(data ...);
-    bool tmp2 = Aggregator_handler<Handlers...>::write_endline(data ...);
+    bool tmp1 = First_handler::_impl_write_endline(std::forward<T>(data) ...);
+    bool tmp2 = Aggregator_handler<Handlers ...>::_impl_write_endline(std::forward<T>(data) ...);
+    return tmp1 && tmp2;
+}
+
+template <typename First_handler, typename ... Handlers>
+bool Aggregator_handler<First_handler, Handlers ...>::initialize() throw()
+{
+    bool tmp1 = First_handler::initialize();
+    bool tmp2 = Aggregator_handler<Handlers ...>::initialize();
     return tmp1 && tmp2;
 }
 

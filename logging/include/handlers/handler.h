@@ -12,15 +12,15 @@ class Handler
         /**
             The 2 following public class write methods SHOULD be defined again in subclasses (in this class they throw runtime error)
         **/
-        template <typename T, typename ... U>
-        static bool write(const T& data, const U& ... following) throw();          // Basic write operation with multi input types
+        template <typename ... T>
+        static bool write(T&& ... data) throw();          // Basic write operation with multi input types
 
-        template <typename T, typename ... U>
-        static bool write_endline(const T& data, const U& ... following) throw();  // Basic write operation with multi input types with endline added
+        template <typename ... T>
+        static bool write_endline(T&& ... data) throw();  // Basic write operation with multi input types with endline added
 
 
         template <typename T>
-        Handler<Child>& operator << (const T& data) throw();    // Method tantamount to write
+        Handler<Child>& operator << (T&& data) throw();    // Method tantamount to write
         static Handler<Child> stream;
 
 
@@ -28,6 +28,8 @@ class Handler
 
     protected:
         static bool initialize() throw();                       // Method that should be overloaded in subclasses
+
+    private:
         static bool _initialized;
 
         Handler() {}
@@ -44,33 +46,31 @@ bool Handler<Child>::_initialized = false;
 
 
 template <typename Child>
-template <typename T, typename ... U>
-bool Handler<Child>::write(const T& data, const U& ... following) throw()
+template <typename ... T>
+bool Handler<Child>::write(T&& ... data) throw()
 {
-    bool tmp1 = Child::write(data);
-    bool tmp2 = true;
-    if(sizeof...(following))
-        tmp2 = Handler<Child>::write(following ...);
-    return tmp1 && tmp2;
+    if(!check_initialization_and_react())
+        return false;
+
+    return Child::_impl_write(std::forward<T>(data) ...);
 }
 
 template <typename Child>
-template <typename T, typename ... U>
-bool Handler<Child>::write_endline(const T& data, const U& ... following) throw()
+template <typename ... T>
+bool Handler<Child>::write_endline(T&& ... data) throw()
 {
-    bool tmp1 = Child::write_endline(data);
-    bool tmp2 = true;
-    if(sizeof...(following))
-        tmp2 = Handler<Child>::write_endline(following ...);
-    return tmp1 && tmp2;
+    if(!check_initialization_and_react())
+        return false;
+
+    return Child::_impl_write_endline(std::forward<T>(data) ...);
 }
 
 
 template <typename Child>
 template <typename T>
-Handler<Child>& Handler<Child>::operator << (const T& data) throw()
+Handler<Child>& Handler<Child>::operator << (T&& data) throw()
 {
-    Handler<Child>::write<T>(data);
+    Handler<Child>::write<T>(std::forward<T>(data));
     return *this;
 }
 

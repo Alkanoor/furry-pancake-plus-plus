@@ -151,11 +151,11 @@ class Logger<Level_Logger<Handler2, N>, Handlers ...>: public Basic_Logger<Level
 };
 
 
-#include "../logging/include/aggregators/date_aggregator.h"
-#include "../logging/include/aggregators/terminal_color_aggregator.h"
-#include "../logging/include/handlers/aggregator_handler.h"
-#include "../logging/include/handlers/file_handler.h"
-//#include "../logging/include/open_failed_behaviour_factory.h"
+#include "../../logging/include/aggregators/date_aggregator.h"
+#include "../../logging/include/aggregators/terminal_color_aggregator.h"
+#include "../../logging/include/handlers/aggregator_handler.h"
+#include "../../logging/include/handlers/file_handler.h"
+#include "../../logging/include/open_failed_behaviour_factory.h"
 
 #include <iostream>
 
@@ -187,13 +187,6 @@ static constexpr const char filename[] = "lol.txt";
 static constexpr const char throw_keyword[] = "throw";
 
 
-template <typename A, typename B=void, typename C...>
-class O
-{};
-
-template <typename A, typename std::enable_if<has_aggregate_function<B>::value>::type, typename C...>
-class O<A, type
-{};
 
 int main()
 {
@@ -216,14 +209,14 @@ int main()
     std::cout << has_helloworld<Date_aggregator<void>>::value << std::endl;
 
     std::cout<<String_aggregator<google, ok>::aggregate_tail("le temps long")<<std::endl;
-    std::cout<<String_aggregator<ok, end, String_concatenator<google> >::aggregate_tail("mdr")<<std::endl;
-    std::cout<<String_concatenator<ok, String_aggregator<google, end> >::aggregate("mdr")<<std::endl;
+    std::cout<<String_aggregator<ok, end, String_header<google> >::aggregate_tail("mdr")<<std::endl;
+    std::cout<<String_header<ok, String_aggregator<google, end> >::aggregate("mdr")<<std::endl;
     std::cout<<String_aggregator<ok, end, String_aggregator<google, ok> >::aggregate_tail("  aaa ")<<std::endl;
     std::cout<<String_aggregator<ok, end, String_aggregator<google, ok, Date_aggregator<String_aggregator<mdr, fin, Basic_date_aggregator> > > >::aggregate("  aaa ")<<std::endl;
     std::cout<<String_aggregator<ok, end, String_aggregator<google, ok, Date_aggregator<String_aggregator<mdr, fin> > > >::aggregate_tail("  aaa ")<<std::endl;
 
-    std::cout<<String_concatenator<ok, String_aggregator<google, end, Red_aggregator<Date_aggregator<String_concatenator<mdr> > > > >::aggregate(" hihi ")<<std::endl;
-    std::cout<<String_concatenator<ok, String_aggregator<google, end, Red_aggregator<Date_aggregator<String_concatenator<mdr> > > > >::aggregate_tail(" hihi ")<<std::endl;
+    std::cout<<String_header<ok, String_aggregator<google, end, Red_aggregator<Date_aggregator<String_header<mdr> > > > >::aggregate(" hihi ")<<std::endl;
+    std::cout<<String_header<ok, String_aggregator<google, end, Red_aggregator<Date_aggregator<String_header<mdr> > > > >::aggregate_tail(" hihi ")<<std::endl;
 
     std::cout<<Red_aggregator<String_aggregator<ok, google, Yellow_aggregator<String_aggregator<ok, google, Blue_aggregator<String_aggregator<ok, google,
                                 Green_aggregator<String_aggregator<ok, google, Magenta_aggregator<String_aggregator<ok, google, White_aggregator<String_aggregator<ok, google, Orange_aggregator<String_aggregator<end, fin>>>>>>>>>>>>>>::aggregate("=======")<<std::endl;

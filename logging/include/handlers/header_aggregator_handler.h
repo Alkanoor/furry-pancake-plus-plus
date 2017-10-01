@@ -5,80 +5,68 @@
 #include "handler.h"
 
 
+template <typename Aggregator_type, typename Child, typename Enable = void>
+class _impl_Header_aggregator
+{
+    private:
+        static bool initialize() throw()
+        {
+            return Child::check_initialization_and_react();
+        }
+};
+
 template <typename Aggregator, typename Child>
-class Header_aggregator_handler : public Handler<Header_aggregator_handler<Aggregator, Child> >
+class Header_aggregator_handler<Aggregator, Child, typename std::enable_if<has_aggregate_function<Aggregator>::value && has_aggregate_tail_function<Aggregator>::value>::type> :
+            public Handler<Header_aggregator_handler<Aggregator, Child, typename std::enable_if<has_aggregate_function<Aggregator>::value && has_aggregate_tail_function<Aggregator>::value>::type> >
 {
     public:
-        template <typename T>
-        static bool write(const T& data) throw()
+        template <typename ... T>
+        static bool _impl_write(T&& ... data) throw()
         {
-            Child::write(Aggregator::aggregate(), data);
+            Child::_impl_write(Aggregator::aggregate(), std::forward<T>(data) ..., Aggregator::aggregate_tail());
         }
 
-        template <typename T>
-        static bool write_endline(const T& data) throw()
+        template <typename ... T>
+        static bool _impl_write_endline(T&& ... data) throw()
         {
-            Child::write_endline(Aggregator::aggregate(), data);
-        }
-
-    private:
-        static bool initialize() throw()
-        {
-            return Child::check_initialization_and_react();
+            Child::_impl_write_endline(Aggregator::aggregate(), std::forward<T>(data) ..., Aggregator::aggregate_tail());
         }
 };
 
-template <std::string Head, typename Child>
-class Header_aggregator_handler<Head, Child> : public Handler<Header_aggregator_handler<std::string, Child> >
+template <typename Aggregator, typename Child>
+class Header_aggregator_handler<Aggregator, Child, typename std::enable_if<has_aggregate_function<Aggregator>::value && !has_aggregate_tail_function<Aggregator>::value>::type> :
+            public Handler<Header_aggregator_handler<Aggregator, Child, typename std::enable_if<has_aggregate_function<Aggregator>::value && !has_aggregate_tail_function<Aggregator>::value>::type> >
 {
     public:
-        template <typename T>
-        static bool write(const T& data) throw();
-
-        template <typename T>
-        static bool write_endline(const T& data) throw();
-
-    private:
-        static bool initialize() throw()
+        template <typename ... T>
+        static bool _impl_write(T&& ... data) throw()
         {
-            return Child::check_initialization_and_react();
+            Child::_impl_write(Aggregator::aggregate(), std::forward<T>(data) ...);
+        }
+
+        template <typename ... T>
+        static bool _impl_write_endline(T&& ... data) throw()
+        {
+            Child::_impl_write_endline(Aggregator::aggregate(), std::forward<T>(data) ...);
         }
 };
 
-
-template <typename Child>
-template <typename T>
-bool Ostream_handler<Child>::write(const T& data) throw()
+template <const char* Head, typename Child>
+class Header_aggregator_handler<Head, Child> : public Handler<Header_aggregator_handler<Head, Child> >
 {
-    if(!check_initialization_and_react())
-        return false;
+    public:
+        template <typename ... T>
+        static bool _impl_write(T&& ... data) throw()
+        {
+            Child::_impl_write(head, std::forward<T>(data) ...);
+        }
 
-    (*_ostream)<<data;
-    return true;
-}
-
-template <typename Child>
-template <typename T>
-bool Ostream_handler<Child>::write_endline(const T& data) throw()
-{
-    if(!check_initialization_and_react())
-        return false;
-
-    (*_ostream)<<data<<std::endl;
-    return true;
-}
-
-template <typename Child>
-bool Ostream_handler<Child>::initialize() throw()
-{
-    throw std::runtime_error("Error: Initilization of Ostream handler is impossible, check your specified handlers are not of type Ostream_handler<T>.");
-}
-
-template <typename Child>
-std::ostream** Ostream_handler<Child>::get_ostream_pointer()
-{
-    return &_ostream;
-}
+        template <typename ... T>
+        static bool _impl_write_endline(T&& ... data) throw()
+        {
+            Child::_impl_write_endline(head, std::forward<T>(data) ...);
+        }
+};
 
 
 #endif

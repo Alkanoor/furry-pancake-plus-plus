@@ -30,6 +30,9 @@ class File_handler : public Ostream_handler<File_handler<Filename, trunc_if_exis
         static std::ofstream _private_ostream;
 };
 
+template <const char* Filename, bool trunc_if_exists>
+std::ofstream File_handler<Filename, trunc_if_exists>::_private_ostream;
+
 
 template <const char* Filename, typename Behaviour_factory, typename Input_type_Factory, Input_type_Factory Bad_File_Behaviour, bool trunc_if_exists = false>
 class File_handler_fail_behaviour : public Ostream_handler<File_handler_fail_behaviour<Filename, Behaviour_factory, Input_type_Factory, Bad_File_Behaviour, trunc_if_exists> >
@@ -60,6 +63,9 @@ class File_handler_fail_behaviour : public Ostream_handler<File_handler_fail_beh
         static std::ofstream _private_ostream;
 };
 
+template <const char* Filename, typename Behaviour_factory, typename Input_type_Factory, Input_type_Factory Bad_File_Behaviour, bool trunc_if_exists>
+std::ofstream File_handler_fail_behaviour<Filename, Behaviour_factory, Input_type_Factory, Bad_File_Behaviour, trunc_if_exists>::_private_ostream;
+
 
 template <typename Filename_aggregator, bool trunc_if_exists = false>
 class Dynamic_file_handler : public Ostream_handler<Dynamic_file_handler<Filename_aggregator, trunc_if_exists> >
@@ -84,6 +90,9 @@ class Dynamic_file_handler : public Ostream_handler<Dynamic_file_handler<Filenam
     private:
         static std::ofstream _private_ostream;
 };
+
+template <typename Filename_aggregator, bool trunc_if_exists>
+std::ofstream Dynamic_file_handler<Filename_aggregator, trunc_if_exists>::_private_ostream;
 
 
 template <typename Filename_aggregator, typename Behaviour_factory, typename Input_type_Factory, Input_type_Factory Bad_File_Behaviour, bool trunc_if_exists = false>
@@ -114,6 +123,9 @@ class Dynamic_file_handler_fail_behaviour : public Ostream_handler<Dynamic_file_
     private:
         static std::ofstream _private_ostream;
 };
+
+template <typename Filename_aggregator, typename Behaviour_factory, typename Input_type_Factory, Input_type_Factory Bad_File_Behaviour, bool trunc_if_exists>
+std::ofstream Dynamic_file_handler_fail_behaviour<Filename_aggregator, Behaviour_factory, Input_type_Factory, Bad_File_Behaviour, trunc_if_exists>::_private_ostream;
 
 
 #endif

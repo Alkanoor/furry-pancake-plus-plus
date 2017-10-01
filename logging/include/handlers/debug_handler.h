@@ -6,11 +6,11 @@ template <typename Sub_handler>
 class Debug_handler : public Handler<Sub_handler>
 {
     public:
-        template <typename T>
-        static bool write(const T& data) throw();
+        template <typename ... T>
+        static bool _impl_write(T&& ... data) throw();
 
-        template <typename T>
-        static bool write_endline(const T& data) throw();
+        template <typename ... T>
+        static bool _impl_write_endline(T&& ... data) throw();
 
         static void enable();
         static void disable();
@@ -26,27 +26,27 @@ bool Debug_handler<Sub_handler>::_debug = true;
 
 
 template <typename Sub_handler>
-template <typename T>
-bool Debug_handler<Sub_handler>::write(const T& data) throw()
+template <typename ... T>
+bool Debug_handler<Sub_handler>::_impl_write(T&& ... data) throw()
 {
     if(!Handler<Sub_handler>::check_initialization_and_react())
         return false;
 
     if(_debug)
-        return Sub_handler::write(data);
+        return Sub_handler::_impl_write(std::forward<T>(data) ...);
 
     return true;
 }
 
 template <typename Sub_handler>
-template <typename T>
-bool Debug_handler<Sub_handler>::write_endline(const T& data) throw()
+template <typename ... T>
+bool Debug_handler<Sub_handler>::_impl_write_endline(T&& ... data) throw()
 {
     if(!Handler<Sub_handler>::check_initialization_and_react())
         return false;
 
     if(_debug)
-        return Sub_handler::write_endline(data);
+        return Sub_handler::_impl_write_endline(std::forward<T>(data) ...);
 
     return true;
 }

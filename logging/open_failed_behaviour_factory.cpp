@@ -4,7 +4,17 @@
 #include <iostream>
 
 
-void reacts(const std::string& id, const std::string& filename) throw()
+constexpr const char Open_failed_behaviour_factory::exit_keyword[];
+constexpr const char Open_failed_behaviour_factory::print_and_exit_keyword[];
+constexpr const char Open_failed_behaviour_factory::print_keyword[];
+constexpr const char Open_failed_behaviour_factory::throw_keyword[];
+constexpr const char Open_failed_behaviour_factory::print_and_throw_keyword[];
+constexpr const char Open_failed_behaviour_factory::log_keyword[];
+constexpr const char Open_failed_behaviour_factory::log_and_throw_keyword[];
+constexpr const char Open_failed_behaviour_factory::log_and_exit_keyword[];
+
+
+void Open_failed_behaviour_factory::reacts(const std::string& id, const std::string& filename) throw()
 {
     if(id == "exit")
         exit(1);
