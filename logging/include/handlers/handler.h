@@ -70,7 +70,7 @@ template <typename Child>
 template <typename T>
 Handler<Child>& Handler<Child>::operator << (T&& data) throw()
 {
-    Handler<Child>::write<T>(std::forward<T>(data));
+    Handler<Child>::write<T>(data);
     return *this;
 }
 
@@ -80,6 +80,7 @@ bool Handler<Child>::check_initialization_and_react() throw()
 {
     if(!_initialized)
         _initialized = Child::initialize();
+
     return _initialized;
 }
 

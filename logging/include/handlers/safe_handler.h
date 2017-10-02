@@ -36,7 +36,7 @@ std::mutex Safe_handler<Sub_handler>::_io_mutex;
 template <typename Sub_handler>
 bool Safe_handler<Sub_handler>::initialize() throw()
 {
-    return Sub_handler::initialize();
+    return Sub_handler::check_initialization_and_react();
 }
 
 

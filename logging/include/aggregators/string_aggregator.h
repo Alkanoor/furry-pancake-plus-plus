@@ -11,7 +11,7 @@ template <const char* head, typename Aggregator, class Enable = void>
 class _impl_String_header
 {
     public:
-        static std::string aggregate(const std::string& input)
+        static std::string aggregate(const std::string& input = "")
         {
             return head+input;
         }
@@ -21,12 +21,12 @@ template <const char* head, typename Aggregator>
 class _impl_String_header<head, Aggregator, typename std::enable_if<has_aggregate_function<Aggregator>::value && has_aggregate_tail_function<Aggregator>::value>::type>
 {
     public:
-        static std::string aggregate(const std::string& input)
+        static std::string aggregate(const std::string& input = "")
         {
             return head+Aggregator::aggregate(input);
         }
 
-        static std::string aggregate_tail(const std::string& input)
+        static std::string aggregate_tail(const std::string& input = "")
         {
             return Aggregator::aggregate_tail(input);
         }
@@ -36,7 +36,7 @@ template <const char* head, typename Aggregator>
 class _impl_String_header<head, Aggregator, typename std::enable_if<has_aggregate_function<Aggregator>::value && !has_aggregate_tail_function<Aggregator>::value>::type>
 {
     public:
-        static std::string aggregate(const std::string& input)
+        static std::string aggregate(const std::string& input = "")
         {
             return head+Aggregator::aggregate(input);
         }
@@ -58,7 +58,7 @@ template <const char* head, const char* tail, typename Aggregator, typename Enab
 class _impl_String_aggregator : public String_header<head, Aggregator>
 {
     public:
-        static std::string aggregate_tail(const std::string& input)
+        static std::string aggregate_tail(const std::string& input = "")
         {
             return input+tail;
         }
@@ -69,7 +69,7 @@ class _impl_String_aggregator<head, tail, Aggregator, typename std::enable_if<ha
         public String_header<head, Aggregator>
 {
     public:
-        static std::string aggregate_tail(const std::string& input)
+        static std::string aggregate_tail(const std::string& input = "")
         {
             return Aggregator::aggregate_tail(input)+tail;
         }
@@ -80,7 +80,7 @@ class _impl_String_aggregator<head, tail, Aggregator, typename std::enable_if<!h
         public String_header<head, Aggregator>
 {
     public:
-        static std::string aggregate_tail(const std::string& input)
+        static std::string aggregate_tail(const std::string& input = "")
         {
             return input+tail;
         }

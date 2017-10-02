@@ -53,20 +53,8 @@ bool Ostream_handler<Child>::_impl_write_endline(T&& ... data) throw()
 template <typename Child>
 template <size_t N, typename ... T>
 class Ostream_handler<Child>::_impl_detail
-{
-    public:
-        static bool _impl_write(std::ostream* ostream, T&& ... data) throw()
-        {
-            (void)ostream;
-            return true;
-        }
+{};
 
-        static bool _impl_write_endline(std::ostream* ostream, T&& ... data) throw()
-        {
-            (void)ostream;
-            return true;
-        }
-};
 
 template <typename Child>
 template <size_t N, typename T, typename ... U>
@@ -87,19 +75,19 @@ class Ostream_handler<Child>::_impl_detail<N, T, U ...>
 };
 
 template <typename Child>
-template <typename T, typename ... U>
-class Ostream_handler<Child>::_impl_detail<0, T, U ...>
+template <typename ... T>
+class Ostream_handler<Child>::_impl_detail<0, T ...>
 {
     public:
-        static bool _impl_write(std::ostream* ostream, T&& data, U&& ... following) throw()
+        static bool _impl_write(std::ostream* ostream) throw()
         {
-            (*ostream)<<data;
+            (void)(ostream);
             return true;
         }
 
-        static bool _impl_write_endline(std::ostream* ostream, T&& data, U&& ... following) throw()
+        static bool _impl_write_endline(std::ostream* ostream) throw()
         {
-            (*ostream)<<data<<std::endl;
+            (*ostream)<<std::endl;
             return true;
         }
 };

@@ -24,7 +24,7 @@ class _impl_Date_aggregator
             return ret;
         }
 
-        static std::string aggregate(const std::string& input)
+        static std::string aggregate(const std::string& input = "")
         {
             return "["+date()+"]"+input;
         }
@@ -40,7 +40,7 @@ class _impl_Date_aggregator<Aggregator, typename std::enable_if<has_aggregate_ta
             return "["+date()+"]"+Aggregator::aggregate(input);
         }
 
-        static std::string aggregate_tail(const std::string& input)
+        static std::string aggregate_tail(const std::string& input = "")
         {
             return Aggregator::aggregate_tail(input);
         }
@@ -51,7 +51,7 @@ class _impl_Date_aggregator<Aggregator, typename std::enable_if<!has_aggregate_t
         public _impl_Date_aggregator<void>
 {
     public:
-        static std::string aggregate(const std::string& input)
+        static std::string aggregate(const std::string& input = "")
         {
             return "["+date()+"]"+Aggregator::aggregate(input);
         }

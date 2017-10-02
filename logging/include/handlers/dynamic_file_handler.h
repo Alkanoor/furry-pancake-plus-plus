@@ -8,6 +8,8 @@
 template <typename Behaviour_factory, typename Input_type_Factory, Input_type_Factory Bad_File_Behaviour>
 class Dynamic_file_handler : public Handler<Dynamic_file_handler>
 {
+    friend class Handler<Dynamic_file_handler>;
+
     template <typename Id_type, Id_type id>
     friend class Pool_ostream_handler;
 

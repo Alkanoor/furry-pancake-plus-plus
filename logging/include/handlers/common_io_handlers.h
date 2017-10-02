@@ -9,7 +9,9 @@
 
 class Stdout_handler : public Ostream_handler<Stdout_handler>
 {
-    public:
+    friend class Handler<Stdout_handler>;
+
+    private:
         static bool initialize()
         {
             _ostream = &std::cout;
@@ -19,7 +21,9 @@ class Stdout_handler : public Ostream_handler<Stdout_handler>
 
 class Stderr_handler : public Ostream_handler<Stderr_handler>
 {
-    public:
+    friend class Handler<Stderr_handler>;
+
+    private:
         static bool initialize()
         {
             _ostream = &std::cerr;

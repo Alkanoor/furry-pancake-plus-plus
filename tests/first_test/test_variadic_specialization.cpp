@@ -17,7 +17,7 @@ class Handler2
             return write(data) && write<const U&...>(std::forward<const U&>(following)...);
         }
 };
-
+/*
 class Safe_handler
 {
     public:
@@ -40,7 +40,7 @@ class Safe_handler
         {
             return handler(std::forward<const T&>(data)...);
         }
-};
+};*/
 
 int f()
 {return 42;}
@@ -109,6 +109,7 @@ bool g()
 }
 
 
+/*
 template <typename A, size_t N>
 class Level_Logger
 {
@@ -148,7 +149,7 @@ class Logger<Level_Logger<Handler2, N>, Handlers ...>: public Basic_Logger<Level
             Level_Logger<Handler2, N>::print();
             Logger<Handlers...>::print();
         }
-};
+};*/
 
 
 #include "../../logging/include/aggregators/date_aggregator.h"
@@ -156,6 +157,7 @@ class Logger<Level_Logger<Handler2, N>, Handlers ...>: public Basic_Logger<Level
 #include "../../logging/include/handlers/aggregator_handler.h"
 #include "../../logging/include/handlers/file_handler.h"
 #include "../../logging/include/open_failed_behaviour_factory.h"
+#include "../../logging/include/loggers/common_loggers.h"
 
 #include <iostream>
 
@@ -190,10 +192,10 @@ static constexpr const char throw_keyword[] = "throw";
 
 int main()
 {
-    int a = 90;
-    int& ref = a;
-    Safe_handler::write<int>(9999);
-    Safe_handler::write<int, double, std::string, int&>(f(), 1.111, "okoko", ref);
+    //int a = 90;
+    //int& ref = a;
+    /*Safe_handler::write<int>(9999);
+    Safe_handler::write<int, double, std::string, int&>(f(), 1.111, "okoko", ref);*/
 
     C<B<int>, double>::other_func(10);
     //C<B<int>, int>::print_wrapped(23);
@@ -201,7 +203,7 @@ int main()
     G g;
     g.print();
 
-    Logger<Level_Logger<int, 3>, double, Level_Logger<int, 5>, int, double>::print();
+    //Logger<Level_Logger<int, 3>, double, Level_Logger<int, 5>, int, double>::print();
 
     std::cout<<Date_aggregator<Date_aggregator<void>>::aggregate("ol")<<std::endl;
     //std::cout<<is_function_pointer<decltype(&Basic_date_aggregator::aggregate)>::value;
@@ -223,5 +225,35 @@ int main()
     std::cout<<Red_aggregator<String_aggregator<ok, google, Yellow_aggregator<String_aggregator<ok, google, Blue_aggregator<String_aggregator<ok, google,
                                 Green_aggregator<String_aggregator<ok, google, Magenta_aggregator<String_aggregator<ok, google, White_aggregator<String_aggregator<ok, google, Orange_aggregator<String_aggregator<end, fin>>>>>>>>>>>>>>::aggregate_tail("=======")<<std::endl;
 
-    File_handler_fail_behaviour<filename, Open_failed_behaviour_factory, const char*, throw_keyword, true>::check_initialization_and_react();
+    typedef File_handler_fail_behaviour<filename, Open_failed_behaviour_factory, const char*, throw_keyword, true> lol_logger;
+    std::cout<<lol_logger::check_initialization_and_react();
+    lol_logger::stream<<"poli";
+    lol_logger::write_endline();
+    lol_logger::write_endline("ok");
+    lol_logger::write_endline("p", "qqq");
+
+    /*basic_logger::stream<<"ooooooooooooo";
+    basic_logger::write_endline("ppppppppp");
+    basic_timed_logger::write_endline("Ahahah");*/
+
+    std::cout<<std::endl<<std::endl;
+
+    error_logger::write_endline("ici");
+
+    dated_severe_red_logger::write_endline("ce para", 2);
+    dated_errors_orange_logger::write_endline("f0l13");
+    dated_warning_yellow_logger::write_endline("montre plein ", 2);
+    dated_info_white_logger::write_endline("couleurs");
+
+    error_logger::write_endline("fin erreur");
+
+    dated_warning_yellow_logger::log(std::cout, "mdrrr", 2, "PLOL")<<"mdddd"<<std::endl;
+
+    dated_level_logger::write_endline("EROOR warning info SEVER");
+    dated_level_logger::set_level(3);
+    dated_level_logger::write_endline("OOOOO");
+
+    dated_level_logger::set_level(2);
+    dated_level_logger::write_endline("not so important");
+    return 0;
 }

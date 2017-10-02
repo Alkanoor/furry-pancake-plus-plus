@@ -13,6 +13,8 @@
 template <typename Id_type, Id_type id>
 class Safe_pool_ostream_handler : public Handler<Safe_pool_ostream_handler<Id_type, id> >
 {
+    friend class Handler<Safe_pool_ostream_handler<Id_type, id> >;
+
     public:
         template <typename Handler_type>
         static void add_stream(int n_initialisation_tries = 1);

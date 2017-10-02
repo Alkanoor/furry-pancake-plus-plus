@@ -12,6 +12,8 @@
 template <typename Id_type, Id_type id>
 class Pool_ostream_handler : public Handler<Pool_ostream_handler<Id_type, id> >
 {
+    friend class Handler<Pool_ostream_handler<Id_type, id> >;
+
     public:
         template <typename Handler_type>
         static void add_stream(int n_initialisation_tries = 1);

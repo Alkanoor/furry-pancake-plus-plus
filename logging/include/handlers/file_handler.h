@@ -20,7 +20,7 @@ class File_handler : public Ostream_handler<File_handler<Filename, trunc_if_exis
                 _private_ostream = std::ofstream(Filename, std::ios::out | std::ios::app);
 
             if(!_private_ostream)
-                throw std::runtime_error("Error: Unable to open "+std::string(Filename)+" for logging.");
+                throw std::runtime_error("Error: Unable to open \""+std::string(Filename)+"\" for logging. (you can try to create directory to solve the issue)");
 
             Ostream_handler<File_handler<Filename, trunc_if_exists> >::_ostream = &_private_ostream;
             return true;
@@ -81,7 +81,7 @@ class Dynamic_file_handler : public Ostream_handler<Dynamic_file_handler<Filenam
                 _private_ostream = std::ofstream(Filename_aggregator::aggregate(""), std::ios::out | std::ios::app);
 
             if(!_private_ostream)
-                throw std::runtime_error("Error: Unable to open "+Filename_aggregator::aggregate("")+" for logging.");
+                throw std::runtime_error("Error: Unable to open \""+Filename_aggregator::aggregate("")+"\" for logging. (you can try to create directory to solve the issue)");
 
             Ostream_parent::_ostream = &_private_ostream;
             return true;
