@@ -1,6 +1,7 @@
-#include "utils/util.hpp"
-#include "include/thread.hpp"
-#include "include/thread_pool.hpp"
+#include "loggers/common_loggers.h"
+#include "include/thread_pool.h"
+#include "include/thread.h"
+
 
 #include <stdexcept>
 
@@ -10,19 +11,8 @@ std::map<int, Thread*> Thread::threads;
     Thread_Pool Thread::default_pool;
 #endif
 
-#ifdef LOG_MUTEX_DEBUG
-    std::shared_ptr<Info_Warning_Error_Logger_Threaded_Debug> Thread::debug_logger;
-#endif
 
-
-Thread::Thread(int id, bool autostart, double sleep_between_instances, double sleep_between_operations, const std::function<void(double)>& sleep_function
-                #ifdef LOG_EVENTS
-                    , const std::shared_ptr<Info_Warning_Error_Logger_Threaded>& info_logger
-                #endif
-                #ifdef LOG_EXCEPTIONS
-                    , const std::shared_ptr<Info_Warning_Error_Logger_Threaded>& error_logger
-                #endif
-               ) :
+Thread::Thread(int id, bool autostart, double sleep_between_instances, double sleep_between_operations, const std::function<void(double)>& sleep_function) :
     thread_id(id),
     is_running(false),
     is_stopped(true),
@@ -33,18 +23,7 @@ Thread::Thread(int id, bool autostart, double sleep_between_instances, double sl
     sleep_between_instances(sleep_between_instances),
     sleep_between_operations(sleep_between_operations),
     sleep_function(sleep_function)
-    #ifdef LOG_EVENTS
-        , events_logger(info_logger)
-    #endif
-    #ifdef LOG_EXCEPTIONS
-        , error_logger(error_logger)
-    #endif
 {
-    #ifdef LOG_MUTEX_DEBUG
-        if(!debug_logger)
-            debug_logger = Easy_Log_In_File_Threaded_Debug::getInstance().getInfoLog();
-    #endif
-
     if(threads.count(id))
         throw std::runtime_error("Error: forbidden thread creation: same id as another thread");
 
@@ -68,17 +47,18 @@ Thread::~Thread()
 bool Thread::start()
 {
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Lock mutex on logic in start in thread ", thread_id);
+        thread_safe_debug_logger::write_endline("Lock mutex on logic in start in thread ", thread_id);
     #endif
     mutex_on_finished.lock();
     if(!is_finished)
     {
         #ifdef LOG_EVENTS
-            events_logger->info("Starting thread ", thread_id, " not done : already started");
+            logger::set_level(INFO);
+            logger::write_endline("Starting thread ", thread_id, " not done : already started");
         #endif
         mutex_on_finished.unlock();
         #ifdef LOG_MUTEX_DEBUG
-            debug_logger->write("Unlock mutex on logic in start in thread ", thread_id);
+            thread_safe_debug_logger::write_endline("Unlock mutex on logic in start in thread ", thread_id);
         #endif
 
         return false;
@@ -86,12 +66,13 @@ bool Thread::start()
     else
     {
         #ifdef LOG_EVENTS
-            events_logger->info("Starting thread ", thread_id);
+            logger::set_level(INFO);
+            logger::write_endline("Starting thread ", thread_id);
         #endif
     }
     mutex_on_finished.unlock();
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Unlock mutex on logic in start in thread ", thread_id);
+        thread_safe_debug_logger::write_endline("Unlock mutex on logic in start in thread ", thread_id);
     #endif
 
     is_stopped = false;
@@ -103,18 +84,18 @@ bool Thread::start()
     return true;
 }
 
-#include <iostream>
 void Thread::restart()
 {
     if(!terminated)
     {
         #ifdef LOG_MUTEX_DEBUG
-            debug_logger->write("Lock mutex on logic in restart in thread ", thread_id);
+            thread_safe_debug_logger::write_endline("Lock mutex on logic in restart in thread ", thread_id);
         #endif
         mutex_on_finished.lock();
 
         #ifdef LOG_EVENTS
-            events_logger->info("Restarting thread ", thread_id);
+            logger::set_level(INFO);
+            logger::write_endline("Restarting thread ", thread_id);
         #endif
 
         is_stopped = false;
@@ -125,13 +106,14 @@ void Thread::restart()
         else
         {
             #ifdef LOG_EVENTS
-                events_logger->info("(Was Stopped so new thread)");
+                logger::set_level(INFO);
+                logger::write_endline("(Was Stopped so new thread)");
             #endif
 
             dont_stop = false;
             is_finished = false;
             #ifdef LOG_MUTEX_DEBUG
-                debug_logger->write("New thread for id ", thread_id);
+                thread_safe_debug_logger::write_endline("New thread for id ", thread_id);
             #endif
 
             if(thread.joinable())
@@ -141,13 +123,14 @@ void Thread::restart()
 
         mutex_on_finished.unlock();
         #ifdef LOG_MUTEX_DEBUG
-            debug_logger->write("Unlock mutex on logic in restart in thread ", thread_id);
+            thread_safe_debug_logger::write_endline("Unlock mutex on logic in restart in thread ", thread_id);
         #endif
     }
     else
     {
         #ifdef LOG_EVENTS
-            events_logger->info("Restarting thread ", thread_id, " impossible because terminated was previously called");
+            logger::set_level(INFO);
+            logger::write_endline("Restarting thread ", thread_id, " impossible because terminated was previously called");
         #endif
     }
 }
@@ -156,7 +139,8 @@ void Thread::pause_processing()
 {
     is_running = false;
     #ifdef LOG_EVENTS
-        events_logger->info("Pausing thread ", thread_id);
+        logger::set_level(INFO);
+        logger::write_endline("Pausing thread ", thread_id);
     #endif
 }
 
@@ -164,14 +148,15 @@ void Thread::continue_processing()
 {
     is_running = true;
     #ifdef LOG_EVENTS
-        events_logger->info("Continuing thread ", thread_id);
+        logger::set_level(INFO);
+        logger::write_endline("Continuing thread ", thread_id);
     #endif
 }
 
 void Thread::stop()
 {
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Lock mutex on logic in stop in thread ", thread_id);
+        thread_safe_debug_logger::write_endline("Lock mutex on logic in stop in thread ", thread_id);
     #endif
     mutex_on_finished.lock();
 
@@ -180,20 +165,21 @@ void Thread::stop()
         dont_stop = false;
         mutex_on_finished.unlock();
         #ifdef LOG_MUTEX_DEBUG
-            debug_logger->write("Unlock mutex on logic in stop in thread ", thread_id);
+            thread_safe_debug_logger::write_endline("Unlock mutex on logic in stop in thread ", thread_id);
         #endif
         return;
     }
 
     #ifdef LOG_EVENTS
-        events_logger->info("Stopping thread ", thread_id);
+        logger::set_level(INFO);
+        logger::write_endline("Stopping thread ", thread_id);
     #endif
 
     is_stopped = true;
     is_running = false;
 
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Lock mutex on data in stop in thread ", thread_id);
+        thread_safe_debug_logger::write_endline("Lock mutex on data in stop in thread ", thread_id);
     #endif
 
     mutex_on_to_exec.lock();
@@ -201,19 +187,19 @@ void Thread::stop()
     mutex_on_to_exec.unlock();
 
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Unlock mutex on data in stop in thread ", thread_id);
+        thread_safe_debug_logger::write_endline("Unlock mutex on data in stop in thread ", thread_id);
     #endif
 
     mutex_on_finished.unlock();
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Unlock mutex on logic in stop in thread ", thread_id);
+        thread_safe_debug_logger::write_endline("Unlock mutex on logic in stop in thread ", thread_id);
     #endif
 }
 
 void Thread::soft_stop()
 {
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Lock mutex on logic in soft stop in thread ", thread_id);
+        thread_safe_debug_logger::write_endline("Lock mutex on logic in soft stop in thread ", thread_id);
     #endif
     mutex_on_finished.lock();
 
@@ -222,13 +208,14 @@ void Thread::soft_stop()
         dont_stop = false;
         mutex_on_finished.unlock();
         #ifdef LOG_MUTEX_DEBUG
-            debug_logger->write("Unlock mutex on logic in soft stop in thread ", thread_id);
+            thread_safe_debug_logger::write_endline("Unlock mutex on logic in soft stop in thread ", thread_id);
         #endif
         return;
     }
 
     #ifdef LOG_EVENTS
-        events_logger->info("Stopping (soft) thread ", thread_id);
+        logger::set_level(INFO);
+        logger::write_endline("Stopping (soft) thread ", thread_id);
     #endif
 
     is_stopped = true;
@@ -236,17 +223,17 @@ void Thread::soft_stop()
 
     mutex_on_finished.unlock();
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Unlock mutex on logic in soft stop in thread ", thread_id);
+        thread_safe_debug_logger::write_endline("Unlock mutex on logic in soft stop in thread ", thread_id);
     #endif
 }
 
 void Thread::terminate()
 {
     #ifdef LOG_EVENTS
-        events_logger->info("Terminating thread ", thread_id);
+        logger::set_level(INFO);
+        logger::write_endline("Terminating thread ", thread_id);
     #endif
     terminated = true;
-    Utils::terminate_and_close_logs();
 }
 
 void Thread::join()
@@ -263,12 +250,12 @@ void Thread::join()
     is_stopped = true;
     is_running = false;
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Attempt to join ", thread_id);
+        thread_safe_debug_logger::write_endline("Attempt to join ", thread_id);
     #endif
     if(thread.joinable())
         thread.join();
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Thread ", thread_id, " joined");
+        thread_safe_debug_logger::write_endline("Thread ", thread_id, " joined");
     #endif
 }
 
@@ -279,14 +266,14 @@ void Thread::run()
     #endif
 
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Lock mutex on logic in run in thread ", thread_id);
+        thread_safe_debug_logger::write_endline("Lock mutex on logic in run in thread ", thread_id);
     #endif
     mutex_on_finished.lock();
     while(!is_stopped)
     {
         mutex_on_finished.unlock();
         #ifdef LOG_MUTEX_DEBUG
-            debug_logger->write("Unlock mutex on logic in run in thread ", thread_id);
+            thread_safe_debug_logger::write_endline("Unlock mutex on logic in run in thread ", thread_id);
         #endif
 
         while(is_running)
@@ -294,7 +281,7 @@ void Thread::run()
             if(to_exec.size())
             {
                 #ifdef LOG_MUTEX_DEBUG
-                    debug_logger->write("Lock mutex on data in run in thread ", thread_id);
+                    thread_safe_debug_logger::write_endline("Lock mutex on data in run in thread ", thread_id);
                 #endif
 
                 #ifdef LOG_EVENTS
@@ -305,14 +292,14 @@ void Thread::run()
             while(to_exec.size())
             {
                 #ifdef LOG_MUTEX_DEBUG
-                    debug_logger->write("==== Popping action in a ", to_exec.size(), " sized table in thread ", thread_id);
+                    thread_safe_debug_logger::write_endline("==== Popping action in a ", to_exec.size(), " sized table in thread ", thread_id);
                 #endif
 
                 std::function<void()> current_exec = *(to_exec.begin());
                 to_exec.erase(to_exec.begin());
                 mutex_on_to_exec.unlock();
                 #ifdef LOG_MUTEX_DEBUG
-                    debug_logger->write("Unlock mutex on data in run in thread ", thread_id);
+                    thread_safe_debug_logger::write_endline("Unlock mutex on data in run in thread ", thread_id);
                 #endif
 
                 try
@@ -324,7 +311,8 @@ void Thread::run()
                     std::exception_ptr p = std::current_exception();
                     #ifdef LOG_EXCEPTION
                         if(error_logger)
-                            error_logger->error("Exception in thread ", thread_id, " : ", (p ? p.__cxa_exception_type()->name() : "null"));
+                            logger::set_level(ERROR);
+                            logger::write_endline("Exception in thread ", thread_id, " : ", (p ? p.__cxa_exception_type()->name() : "null"));
                     #endif
                 }
                 sleep_function(sleep_between_operations);
@@ -337,7 +325,8 @@ void Thread::run()
                 if(processing)
                 {
                     processing = false;
-                    events_logger->info("Finished processing in thread ", thread_id);
+                    logger::set_level(INFO);
+                    logger::write_endline("Finished processing in thread ", thread_id);
                 }
             #endif
 
@@ -354,20 +343,21 @@ void Thread::run()
         #ifdef LOG_EVENTS
             mutex_on_to_exec.lock();
             if(to_exec.size())
-                events_logger->info("Pause processing in thread ", thread_id);
+                logger::set_level(INFO);
+                logger::write_endline("Pause processing in thread ", thread_id);
             mutex_on_to_exec.unlock();
         #endif
 
         sleep_function(sleep_between_instances);
 
         #ifdef LOG_MUTEX_DEBUG
-            debug_logger->write("Lock mutex on logic in run in thread ", thread_id);
+            thread_safe_debug_logger::write_endline("Lock mutex on logic in run in thread ", thread_id);
         #endif
         mutex_on_finished.lock();
     }
 
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Lock mutex on data in run in thread ", thread_id);
+        thread_safe_debug_logger::write_endline("Lock mutex on data in run in thread ", thread_id);
     #endif
 
     mutex_on_to_exec.lock();
@@ -375,14 +365,19 @@ void Thread::run()
     mutex_on_to_exec.unlock();
 
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Unlock mutex on data in run in thread ", thread_id, ", leaving");
+        thread_safe_debug_logger::write_endline("Unlock mutex on data in run in thread ", thread_id, ", leaving");
     #endif
 
     is_finished = true;
     mutex_on_finished.unlock();
 
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Unlock mutex on logic in run in thread ", thread_id, ", leaving");
+        thread_safe_debug_logger::write_endline("Unlock mutex on logic in run in thread ", thread_id, ", leaving");
+    #endif
+
+    #ifdef LOG_EVENTS
+        logger::set_level(INFO);
+        logger::write_endline("Thread ", thread_id, " finished");
     #endif
 }
 
@@ -392,7 +387,7 @@ bool Thread::is_started() const
 void Thread::add_to_thread(int id, const std::function<void()>& to_exec)
 {
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Lock mutex on data in order added in thread ", id);
+        thread_safe_debug_logger::write_endline("Lock mutex on data in order added in thread ", id);
     #endif
 
     threads[id]->mutex_on_to_exec.lock();
@@ -400,18 +395,19 @@ void Thread::add_to_thread(int id, const std::function<void()>& to_exec)
     threads[id]->mutex_on_to_exec.unlock();
 
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Unlock mutex on data in order added in thread ", id);
+        thread_safe_debug_logger::write_endline("Unlock mutex on data in order added in thread ", id);
     #endif
 
     #ifdef LOG_EVENTS
-        threads[id]->events_logger->info("Single operation added to thread ", threads[id]->thread_id);
+        logger::set_level(INFO);
+        logger::write_endline("Single operation added to thread ", threads[id]->thread_id);
     #endif
 }
 
 void Thread::add_to_thread_and_exec(int id, const std::function<void()>& to_exec)
 {
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Lock mutex on data in order added and executed in thread ", id);
+        thread_safe_debug_logger::write_endline("Lock mutex on data in order added and executed in thread ", id);
     #endif
 
     threads[id]->mutex_on_to_exec.lock();
@@ -419,21 +415,24 @@ void Thread::add_to_thread_and_exec(int id, const std::function<void()>& to_exec
     threads[id]->mutex_on_to_exec.unlock();
 
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Unlock mutex on data in order added and executed in thread ", id);
+        thread_safe_debug_logger::write_endline("Unlock mutex on data in order added and executed in thread ", id);
     #endif
 
     #ifdef LOG_EVENTS
-        threads[id]->events_logger->info("Single operation added to thread ", threads[id]->thread_id, ", immediate execution");
+        logger::set_level(INFO);
+        logger::write_endline("Single operation added to thread ", threads[id]->thread_id, ", immediate execution");
     #endif
 
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Lock mutex on logic in order added and executed in thread ", id);
+        thread_safe_debug_logger::write_endline("Lock mutex on logic in order added and executed in thread ", id);
     #endif
 
     threads[id]->stop_when_task_finished = true;
     threads[id]->mutex_on_finished.lock();
     if(threads[id]->is_finished)
     {
+        logger::set_level(WARNING);
+        logger::write_endline("Restarting thread ", threads[id]->thread_id);
         threads[id]->mutex_on_finished.unlock();
         threads[id]->restart();
     }
@@ -445,7 +444,7 @@ void Thread::add_to_thread_and_exec(int id, const std::function<void()>& to_exec
     }
 
     #ifdef LOG_MUTEX_DEBUG
-        debug_logger->write("Unlock mutex on logic in order added and executed in thread ", id);
+        thread_safe_debug_logger::write_endline("Unlock mutex on logic in order added and executed in thread ", id);
     #endif
 }
 
@@ -456,7 +455,15 @@ const Thread& Thread::get_thread(int id)
 
 void Thread::join(int id)
 {
-    threads[id]->join();
+    if(threads.count(id) && threads[id])
+        threads[id]->join();
+}
+
+void Thread::join_all()
+{
+    for(auto it : threads)
+        if(it.second)
+            join(it.first);
 }
 
 #ifdef ADD_TO_DEFAULT_POOL

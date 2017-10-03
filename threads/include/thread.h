@@ -5,16 +5,15 @@
 #define ADD_TO_DEFAULT_POOL
 //#define LOG_MUTEX_DEBUG
 #define LOG_EXCEPTIONS
-//#define LOG_EVENTS
+#define LOG_EVENTS
 
 
-#include <map>
-#include <mutex>
-#include <thread>
-#include <unistd.h>
 #include <functional>
-
-#include "logger/include/log_in_file.hpp"
+#include <unistd.h>
+#include <vector>
+#include <thread>
+#include <mutex>
+#include <map>
 
 
 #ifdef ADD_TO_DEFAULT_POOL
@@ -30,14 +29,7 @@
 class Thread
 {
     public:
-        Thread(int id, bool autostart = true, double sleep_between_instance = 0.1, double sleep_between_operations = 0.05, const std::function<void(double)>& sleep_function = std::bind(sleep,std::placeholders::_1)
-                #ifdef LOG_EVENTS
-                    , const std::shared_ptr<Info_Warning_Error_Logger_Threaded>& info_logger = Easy_Log_In_File_Threaded::getInfoLog()
-                #endif
-                #ifdef LOG_EXCEPTIONS
-                    , const std::shared_ptr<Info_Warning_Error_Logger_Threaded>& error_logger = Easy_Log_In_File_Threaded::getErrorLog()
-                #endif
-               );
+        Thread(int id, bool autostart = true, double sleep_between_instance = 0.1, double sleep_between_operations = 0.05, const std::function<void(double)>& sleep_function = std::bind(sleep,std::placeholders::_1));
         ~Thread();
 
 
@@ -58,6 +50,8 @@ class Thread
 
         static const Thread& get_thread(int id);
         static void join(int id);
+        static void join_all();
+
         #ifdef ADD_TO_DEFAULT_POOL
             static const Thread_Pool& get_default_pool();
             static Thread_Pool& get_and_modify_default_pool();
@@ -85,16 +79,6 @@ class Thread
 
         std::mutex mutex_on_to_exec;
         std::vector<std::function<void()> > to_exec;
-
-        #ifdef LOG_EVENTS
-            std::shared_ptr<Info_Warning_Error_Logger_Threaded> events_logger;
-        #endif
-        #ifdef LOG_EXCEPTIONS
-            std::shared_ptr<Info_Warning_Error_Logger_Threaded> error_logger;
-        #endif
-        #ifdef LOG_MUTEX_DEBUG
-            static std::shared_ptr<Info_Warning_Error_Logger_Threaded_Debug> debug_logger;
-        #endif
 
         static std::map<int, Thread*> threads;
         #ifdef ADD_TO_DEFAULT_POOL

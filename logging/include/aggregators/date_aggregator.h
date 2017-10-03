@@ -2,6 +2,8 @@
 #define DATE_AGGREGATOR_H
 
 
+#include <iomanip>
+#include <sstream>
 #include <string>
 #include <ctime>
 
@@ -14,14 +16,12 @@ class _impl_Date_aggregator
     public:
         static std::string date()
         {
-            time_t rawtime;
-            struct tm* timeinfo;
+            auto t = std::time(nullptr);
+            auto tm = *std::localtime(&t);
 
-            time(&rawtime);
-            timeinfo = localtime(&rawtime);
-            std::string ret = asctime(timeinfo);
-            ret.resize(ret.size()-1);
-            return ret;
+            std::ostringstream oss;
+            oss<<std::put_time(&tm, "%d-%m-%Y_%H:%M:%S");
+            return oss.str();
         }
 
         static std::string aggregate(const std::string& input = "")
@@ -35,7 +35,7 @@ class _impl_Date_aggregator<Aggregator, typename std::enable_if<has_aggregate_ta
         public _impl_Date_aggregator<void>
 {
     public:
-        static std::string aggregate(const std::string& input)
+        static std::string aggregate(const std::string& input = "")
         {
             return "["+date()+"]"+Aggregator::aggregate(input);
         }

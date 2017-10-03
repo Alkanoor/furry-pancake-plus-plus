@@ -1,7 +1,7 @@
-#include <cassert>
-#include <algorithm>
+#include "include/thread_pool.h"
 
-#include "include/thread_pool.hpp"
+#include <algorithm>
+#include <cassert>
 
 
 Thread_Pool::Thread_Pool(const std::vector<int>& id_threads) :

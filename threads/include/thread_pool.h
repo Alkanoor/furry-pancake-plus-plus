@@ -1,8 +1,8 @@
-#ifndef THREAD_POOL_HPP
-#define THREAD_POOL_HPP
+#ifndef THREAD_POOL_H
+#define THREAD_POOL_H
 
 
-#include "thread.hpp"
+#include "thread.h"
 
 
 ///************************************************************
