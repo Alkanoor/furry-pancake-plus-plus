@@ -1,12 +1,12 @@
-SUBDIRS = logging tests
+TESTS = first_test
 
 
 all:
-	for dir in $(SUBDIRS) ; do \
+	for dir in $(TESTS) ; do \
         make -C  $$dir ; \
     done
 
 clean:
-	for dir in $(SUBDIRS) ; do \
+	for dir in $(TESTS) ; do \
         make -C  $$dir clean ; \
     done

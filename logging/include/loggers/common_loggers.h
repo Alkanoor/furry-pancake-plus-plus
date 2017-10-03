@@ -12,6 +12,7 @@
 #include "../aggregators/aggregator.h"
 #include "../handlers/safe_handler.h"
 #include "../handlers/file_handler.h"
+#include "../ostream_writable.h"
 #include "thread_safe_logger.h"
 #include "debug_logger.h"
 #include "level_logger.h"
