@@ -12,6 +12,8 @@
 #include "../aggregators/aggregator.h"
 #include "../handlers/safe_handler.h"
 #include "../handlers/file_handler.h"
+#include "thread_safe_logger.h"
+#include "debug_logger.h"
 #include "level_logger.h"
 #include "logger.h"
 
@@ -33,12 +35,12 @@ static constexpr const char info_filename[] = "_info.log";
 static constexpr const char debug_filename[] = "current_debug.log";
 
 
-typedef Logger<Date_aggregator<>, Stdout_handler>                       basic_timed_logger;
-typedef Logger<Stdout_handler>                                          basic_logger;
-typedef Logger<Stderr_handler>                                          basic_error_logger;
-typedef Logger<Date_aggregator<>, Safe_handler<Stdout_handler> >        basic_thread_safe_timed_logger;
-typedef Logger<Safe_handler<Stdout_handler> >                           basic_thread_safe_logger;
-typedef Logger<Safe_handler<Stderr_handler> >                           basic_thread_safe_error_logger;
+typedef Logger<Date_aggregator<>, Stdout_handler>                                   basic_timed_logger;
+typedef Logger<Stdout_handler>                                                      basic_logger;
+typedef Logger<Stderr_handler>                                                      basic_error_logger;
+typedef Thread_safe_logger<Date_aggregator<>, Safe_handler<Stdout_handler> >        basic_thread_safe_timed_logger;
+typedef Thread_safe_logger<Safe_handler<Stdout_handler> >                           basic_thread_safe_logger;
+typedef Thread_safe_logger<Safe_handler<Stderr_handler> >                           basic_thread_safe_error_logger;
 
 typedef Logger<Date_aggregator<String_header<fatal> >,
                Stderr_handler,
@@ -51,40 +53,47 @@ typedef Dynamic_file_handler_fail_behaviour<String_header<base_dir, Date_aggrega
 typedef Dynamic_file_handler_fail_behaviour<String_header<base_dir, String_header<main_errors_filename> >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::throw_keyword> main_errors_handler;
 typedef Dynamic_file_handler_fail_behaviour<String_header<base_dir, String_header<debug_filename> >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::log_keyword, true> debug_handler;
 
+typedef Safe_handler<dated_severe_handler> safe_dated_severe_handler;
+typedef Safe_handler<dated_error_handler> safe_dated_error_handler;
+typedef Safe_handler<dated_warning_handler> safe_dated_warning_handler;
+typedef Safe_handler<dated_info_handler> safe_dated_info_handler;
+typedef Safe_handler<main_errors_handler> safe_main_errors_handler;
+typedef Safe_handler<debug_handler> safe_debug_handler;
+
 typedef Logger<Date_aggregator<String_header<error> >,
                Stderr_handler,
                dated_error_handler> error_logger;
 typedef Logger<Date_aggregator<String_header<error> >,
-               Stderr_handler,
-               Safe_handler<dated_error_handler> > safe_error_logger;
+               Safe_handler<Stderr_handler>,
+               safe_dated_error_handler> safe_error_logger;
 
 typedef Logger<Date_aggregator<String_header<warning> >,
                Stderr_handler,
                dated_warning_handler> warning_logger;
 typedef Logger<Date_aggregator<String_header<warning> >,
-               Stderr_handler,
-               Safe_handler<dated_warning_handler> > thread_safe_warning_logger;
+               Safe_handler<Stderr_handler>,
+               safe_dated_warning_handler> thread_safe_warning_logger;
 
 typedef Logger<Date_aggregator<String_header<info> >,
                Stderr_handler,
                dated_info_handler > info_logger;
 typedef Logger<Date_aggregator<String_header<info> >,
-               Stderr_handler,
-               Safe_handler<dated_info_handler> > thread_safe_info_logger;
+               Safe_handler<Stderr_handler>,
+               safe_dated_info_handler> thread_safe_info_logger;
 
 typedef Logger<Date_aggregator<String_header<error> >,
                Stderr_handler,
                main_errors_handler> errors_to_keep_logger;
 typedef Logger<Date_aggregator<String_header<error> >,
-               Stderr_handler,
-               Safe_handler<main_errors_handler> > thread_safe_errors_to_keep_logger;
+               Safe_handler<Stderr_handler>,
+               safe_main_errors_handler> thread_safe_errors_to_keep_logger;
 
-typedef Logger<String_header<debug, Date_aggregator<>>,
-               Stdout_handler,
-               debug_handler> debug_logger;
-typedef Logger<String_header<debug, Date_aggregator<>>,
-               Stdout_handler,
-               Safe_handler<debug_handler> > thread_safe_debug_logger;
+typedef Debug_logger<String_header<debug, Date_aggregator<>>,
+                     Stdout_handler,
+                     debug_handler> debug_logger;
+typedef Debug_logger<String_header<debug, Date_aggregator<>>,
+                     Safe_handler<Stdout_handler>,
+                     safe_debug_handler> thread_safe_debug_logger;
 
 typedef Aggregator_handler<dated_severe_handler, dated_error_handler, dated_warning_handler, dated_info_handler> info_warning_error_severe_handler;
 typedef Aggregator_handler<dated_error_handler, dated_warning_handler, dated_info_handler> info_warning_error_handler;
@@ -120,6 +129,16 @@ typedef Logger<Header_aggregator_handler<Orange_aggregator<String_header<error> 
 typedef Logger<Header_aggregator_handler<Yellow_aggregator<String_header<warning> >, Stdout_handler> > warning_yellow_logger;
 typedef Logger<Header_handler<info, Stdout_handler> > info_white_logger;
 
+typedef Logger<Header_aggregator_handler<Red_aggregator<Date_aggregator<String_header<severe> > >, Stdout_handler> > safe_dated_severe_red_logger;
+typedef Logger<Header_aggregator_handler<Orange_aggregator<Date_aggregator<String_header<error> > >, Stdout_handler> > safe_dated_errors_orange_logger;
+typedef Logger<Header_aggregator_handler<Yellow_aggregator<Date_aggregator<String_header<warning> > >, Stdout_handler> > safe_dated_warning_yellow_logger;
+typedef Logger<Header_aggregator_handler<Date_aggregator<String_header<info> >, Stdout_handler> > safe_dated_info_white_logger;
+
+typedef Logger<Header_aggregator_handler<Red_aggregator<String_header<severe> >, Stdout_handler> > safe_severe_red_logger;
+typedef Logger<Header_aggregator_handler<Orange_aggregator<String_header<error> >, Stdout_handler> > safe_errors_orange_logger;
+typedef Logger<Header_aggregator_handler<Yellow_aggregator<String_header<warning> >, Stdout_handler> > safe_warning_yellow_logger;
+typedef Logger<Header_handler<info, Stdout_handler> > safe_info_white_logger;
+
 
 typedef Level_logger<Level_handler<0, Header_handler<info, dated_info_handler>, true>, Level_handler<0, info_white_logger, true>,
                      Level_handler<1, Header_handler<warning, dated_warning_handler>, true>, Level_handler<1, warning_yellow_logger, true>,
@@ -141,6 +160,25 @@ typedef Level_logger<Level_handler<0, Header_aggregator_handler<Date_aggregator<
                      Level_handler<1, Header_aggregator_handler<Date_aggregator<String_header<warning> >, info_warning_handler>, true>, Level_handler<1, dated_warning_yellow_logger, true>,
                      Level_handler<2, Header_aggregator_handler<Date_aggregator<String_header<error> >, info_warning_error_handler>, true>, Level_handler<2, dated_errors_orange_logger, true>,
                      Level_handler<3, Header_aggregator_handler<Date_aggregator<String_header<severe> >, info_warning_error_severe_handler>, true>, Level_handler<3, dated_severe_red_logger, true> > recursive_dated_level_logger;
+
+typedef Debug_aggretator_logger<level_logger> debug_level_logger;
+typedef Debug_aggretator_logger<dated_level_logger> debug_dated_level_logger;
+typedef Debug_aggretator_logger<recursive_level_logger> debug_recursive_level_logger;
+typedef Debug_aggretator_logger<recursive_dated_level_logger> debug_recursive_dated_level_logger;
+
+
+typedef Level_logger<Level_handler<0, Header_handler<info, safe_dated_info_handler>, true>, Level_handler<0, safe_info_white_logger, true>,
+                     Level_handler<1, Header_handler<warning, safe_dated_warning_handler>, true>, Level_handler<1, safe_warning_yellow_logger, true>,
+                     Level_handler<2, Header_handler<error, safe_dated_error_handler>, true>, Level_handler<2, safe_errors_orange_logger, true>,
+                     Level_handler<3, Header_handler<severe, safe_dated_severe_handler>, true>, Level_handler<3, safe_severe_red_logger, true> > safe_level_logger;
+
+typedef Level_logger<Level_handler<0, Header_aggregator_handler<Date_aggregator<String_header<info> >, safe_dated_info_handler>, true>, Level_handler<0, safe_dated_info_white_logger, true>,
+                     Level_handler<1, Header_aggregator_handler<Date_aggregator<String_header<warning> >, safe_dated_warning_handler>, true>, Level_handler<1, safe_dated_warning_yellow_logger, true>,
+                     Level_handler<2, Header_aggregator_handler<Date_aggregator<String_header<error> >, safe_dated_error_handler>, true>, Level_handler<2, safe_dated_errors_orange_logger, true>,
+                     Level_handler<3, Header_aggregator_handler<Date_aggregator<String_header<severe> >, safe_dated_severe_handler>, true>, Level_handler<3, safe_dated_severe_red_logger, true> > safe_dated_level_logger;
+
+typedef Debug_aggretator_logger<Thread_safe_aggretator_logger<safe_level_logger> > logger;
+typedef Debug_aggretator_logger<Thread_safe_aggretator_logger<safe_dated_level_logger> > dated_logger;
 
 
 #endif

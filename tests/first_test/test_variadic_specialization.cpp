@@ -225,17 +225,10 @@ int main()
     std::cout<<Red_aggregator<String_aggregator<ok, google, Yellow_aggregator<String_aggregator<ok, google, Blue_aggregator<String_aggregator<ok, google,
                                 Green_aggregator<String_aggregator<ok, google, Magenta_aggregator<String_aggregator<ok, google, White_aggregator<String_aggregator<ok, google, Orange_aggregator<String_aggregator<end, fin>>>>>>>>>>>>>>::aggregate_tail("=======")<<std::endl;
 
-    typedef File_handler_fail_behaviour<filename, Open_failed_behaviour_factory, const char*, throw_keyword, true> lol_logger;
-    std::cout<<lol_logger::check_initialization_and_react();
-    lol_logger::stream<<"poli";
-    lol_logger::write_endline();
-    lol_logger::write_endline("ok");
-    lol_logger::write_endline("p", "qqq");
 
-    /*basic_logger::stream<<"ooooooooooooo";
+    basic_logger::stream<<"ooooooooooooo";
     basic_logger::write_endline("ppppppppp");
-    basic_timed_logger::write_endline("Ahahah");*/
-
+    basic_timed_logger::write_endline("Ahahah");
     std::cout<<std::endl<<std::endl;
 
     error_logger::write_endline("ici");
@@ -255,5 +248,22 @@ int main()
 
     dated_level_logger::set_level(2);
     dated_level_logger::write_endline("not so important");
+
+    debug_recursive_level_logger::set_level(3);
+    debug_recursive_level_logger::write_endline("ceci est un test");
+    debug_recursive_level_logger::set_debug(false);
+    debug_recursive_level_logger::write_endline("should not be printed");
+    debug_recursive_level_logger::set_debug(true);
+    debug_recursive_level_logger::write_endline("nice");
+
+    logger::write_endline("LE THREAD SAFE MARCHE E TTOU MARCHE");
+    logger::debug(false);
+    logger::set_level(2);
+    logger::write("not printed");
+    logger::debug(true);
+    logger::write_endline("now printed");
+    logger::set_level(1);
+    logger::write_endline("cerise sur le gateau d'un beau logger");
+
     return 0;
 }
