@@ -22,20 +22,32 @@ void log_thread_safe(int i)
     }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-    Thread t1(0), t2(1), t3(2), t4(3);
+    int N = 3;
+    if(argc>1)
+    {
+        std::istringstream is(argv[1]);
+        is>>N;
+    }
 
-    for(int i=0; i<100; i++)
-        for(int j=0; j<4; j++)
+    std::vector<Thread*> t;
+    for(int i=0; i<N; i++)
+        t.push_back(new Thread(i));
+
+    for(int i=0; i<100/N; i++)
+        for(int j=0; j<(int)t.size(); j++)
         {
             if(j%2)
-                Thread::add_to_thread_and_exec(j, std::bind(log_thread_safe, 100));
-            else
                 Thread::add_to_thread_and_exec(j, std::bind(log_no_thread_safe, 100));
+            else
+                Thread::add_to_thread_and_exec(j, std::bind(log_thread_safe, 100));
         }
 
     Thread::join_all();
+
+    for(int i=0; i<N; i++)
+        delete t[i];
 
     return 0;
 }
