@@ -28,10 +28,14 @@ $(BUILD):
 $(ADDITIONAL):
 	@mkdir -p $@
 
-clean :
+clean-soft:
 	@rm -rf $(BUILD)
 	@rm -rf $(ADDITIONAL)
-	make -C $(OBJ_DIRS) clean
+
+clean: clean-soft
+	@for dir in $(OBJ_DIRS) ; do \
+        make -C $$dir clean ; \
+    done
 
 
 ifeq ($(wildcard $(OBJ_DIRS)/obj/*.o),)

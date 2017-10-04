@@ -1,5 +1,5 @@
-#ifndef THREAD_HPP
-#define THREAD_HPP
+#ifndef THREAD_H
+#define THREAD_H
 
 
 #define ADD_TO_DEFAULT_POOL

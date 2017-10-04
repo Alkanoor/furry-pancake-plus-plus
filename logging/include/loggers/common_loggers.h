@@ -185,9 +185,9 @@ typedef Level_logger<Level_handler<0, Header_aggregator_handler<Date_aggregator<
                      Level_handler<2, Header_aggregator_handler<Date_aggregator<String_header<error> >, safe_dated_error_handler>, true>, Level_handler<2, safe_dated_errors_orange_logger, true>,
                      Level_handler<3, Header_aggregator_handler<Date_aggregator<String_header<severe> >, safe_dated_severe_handler>, true>, Level_handler<3, safe_dated_severe_red_logger, true> > safe_dated_level_logger;
 
+typedef Thread_safe_aggretator_logger<thread_safe_debug_logger> debug_logger;
 typedef Debug_aggretator_logger<Thread_safe_aggretator_logger<safe_level_logger> > logger;
 typedef Debug_aggretator_logger<Thread_safe_aggretator_logger<safe_dated_level_logger> > dated_logger;
-typedef Thread_safe_aggretator_logger<thread_safe_debug_logger> debug_logger;
 
 
 #endif

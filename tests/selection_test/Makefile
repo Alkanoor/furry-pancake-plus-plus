@@ -1,6 +1,6 @@
-OBJ_DIRS = ../../logging ../../threads
+OBJ_DIRS = ../../logging
 OBJS = $(addsuffix /obj/*.o, $(OBJ_DIRS))
-SRC = test_thread.cpp
+SRC = test_selection.cpp
 
 CC = g++
 CFLAGS = -Wall -Werror -Wextra -O1 -std=c++14 -I../.. -g
@@ -22,9 +22,6 @@ $(EXEC): $(OBJ_DIRS) $(SRC) $(BUILD) $(ADDITIONAL)
 ../../logging:
 	make -C $@ obj
 
-../../threads:
-	make -C $@ obj
-
 $(BUILD):
 	@mkdir -p $@
 
@@ -41,8 +38,6 @@ clean: clean-soft
     done
 
 
-ifeq ($(wildcard ../../threads/obj/*.o),)
 ifeq ($(wildcard ../../logging/obj/*.o),)
 .PHONY: $(OBJ_DIRS)
-endif
 endif
