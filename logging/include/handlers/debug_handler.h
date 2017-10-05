@@ -7,10 +7,10 @@ class Debug_handler : public Handler<Sub_handler>
 {
     public:
         template <typename ... T>
-        static bool _impl_write(T&& ... data) throw();
+        static bool _impl_write(T&& ... data);
 
         template <typename ... T>
-        static bool _impl_write_endline(T&& ... data) throw();
+        static bool _impl_write_endline(T&& ... data);
 
         static void enable();
         static void disable();
@@ -27,7 +27,7 @@ bool Debug_handler<Sub_handler>::_debug = true;
 
 template <typename Sub_handler>
 template <typename ... T>
-bool Debug_handler<Sub_handler>::_impl_write(T&& ... data) throw()
+bool Debug_handler<Sub_handler>::_impl_write(T&& ... data)
 {
     if(!Handler<Sub_handler>::check_initialization_and_react())
         return false;
@@ -40,7 +40,7 @@ bool Debug_handler<Sub_handler>::_impl_write(T&& ... data) throw()
 
 template <typename Sub_handler>
 template <typename ... T>
-bool Debug_handler<Sub_handler>::_impl_write_endline(T&& ... data) throw()
+bool Debug_handler<Sub_handler>::_impl_write_endline(T&& ... data)
 {
     if(!Handler<Sub_handler>::check_initialization_and_react())
         return false;

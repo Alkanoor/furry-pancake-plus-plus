@@ -13,26 +13,27 @@ class Handler
             The 2 following public class write methods SHOULD be defined again in subclasses (in this class they throw runtime error)
         **/
         template <typename ... T>
-        static bool write(T&& ... data) throw();          // Basic write operation with multi input types
+        static bool write(T&& ... data);          // Basic write operation with multi input types
 
         template <typename ... T>
-        static bool write_endline(T&& ... data) throw();  // Basic write operation with multi input types with endline added
+        static bool write_endline(T&& ... data);  // Basic write operation with multi input types with endline added
 
 
         template <typename T>
-        Handler<Child>& operator << (T&& data) throw();    // Method tantamount to write
+        Handler<Child>& operator << (T&& data);    // Method tantamount to write
         static Handler<Child> stream;
 
 
-        static bool check_initialization_and_react() throw();
+        static bool check_initialization_and_react();
 
     protected:
-        static bool initialize() throw();                       // Method that should be overloaded in subclasses
+        static bool initialize();                       // Method that should be overloaded in subclasses
+
+        Handler() {}
 
     private:
         static bool _initialized;
 
-        Handler() {}
         Handler(const Handler&) {}
         Handler& operator = (const Handler&) {}
 };
@@ -47,7 +48,7 @@ bool Handler<Child>::_initialized = false;
 
 template <typename Child>
 template <typename ... T>
-bool Handler<Child>::write(T&& ... data) throw()
+bool Handler<Child>::write(T&& ... data)
 {
     if(!check_initialization_and_react())
         return false;
@@ -57,7 +58,7 @@ bool Handler<Child>::write(T&& ... data) throw()
 
 template <typename Child>
 template <typename ... T>
-bool Handler<Child>::write_endline(T&& ... data) throw()
+bool Handler<Child>::write_endline(T&& ... data)
 {
     if(!check_initialization_and_react())
         return false;
@@ -68,7 +69,7 @@ bool Handler<Child>::write_endline(T&& ... data) throw()
 
 template <typename Child>
 template <typename T>
-Handler<Child>& Handler<Child>::operator << (T&& data) throw()
+Handler<Child>& Handler<Child>::operator << (T&& data)
 {
     Handler<Child>::write<T>(data);
     return *this;
@@ -76,7 +77,7 @@ Handler<Child>& Handler<Child>::operator << (T&& data) throw()
 
 
 template <typename Child>
-bool Handler<Child>::check_initialization_and_react() throw()
+bool Handler<Child>::check_initialization_and_react()
 {
     if(!_initialized)
         _initialized = Child::initialize();
@@ -85,7 +86,7 @@ bool Handler<Child>::check_initialization_and_react() throw()
 }
 
 template <typename Child>
-bool Handler<Child>::initialize() throw()
+bool Handler<Child>::initialize()
 {
     throw std::runtime_error("Error: Initilization of basic Handler is impossible, check your specified handlers are not of type Handler<T>.");
 }

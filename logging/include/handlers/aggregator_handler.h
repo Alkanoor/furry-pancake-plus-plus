@@ -34,19 +34,19 @@ class Aggregator_handler<First_handler, Handlers ...> : public Handler<Aggregato
 
     public:
         template <typename ... T>
-        static bool _impl_write(T&& ... data) throw();
+        static bool _impl_write(T&& ... data);
 
         template <typename ... T>
-        static bool _impl_write_endline(T&& ... data) throw();
+        static bool _impl_write_endline(T&& ... data);
 
     private:
-        static bool initialize() throw();
+        static bool initialize();
 };
 
 
 template <typename First_handler, typename ... Handlers>
 template <typename ... T>
-bool Aggregator_handler<First_handler, Handlers ...>::_impl_write(T&& ... data) throw()
+bool Aggregator_handler<First_handler, Handlers ...>::_impl_write(T&& ... data)
 {
     bool tmp1 = First_handler::_impl_write(std::forward<T>(data) ...);
     bool tmp2 = Aggregator_handler<Handlers ...>::_impl_write(std::forward<T>(data) ...);
@@ -55,7 +55,7 @@ bool Aggregator_handler<First_handler, Handlers ...>::_impl_write(T&& ... data) 
 
 template <typename First_handler, typename ... Handlers>
 template <typename ... T>
-bool Aggregator_handler<First_handler, Handlers ...>::_impl_write_endline(T&& ... data) throw()
+bool Aggregator_handler<First_handler, Handlers ...>::_impl_write_endline(T&& ... data)
 {
     bool tmp1 = First_handler::_impl_write_endline(std::forward<T>(data) ...);
     bool tmp2 = Aggregator_handler<Handlers ...>::_impl_write_endline(std::forward<T>(data) ...);
@@ -63,7 +63,7 @@ bool Aggregator_handler<First_handler, Handlers ...>::_impl_write_endline(T&& ..
 }
 
 template <typename First_handler, typename ... Handlers>
-bool Aggregator_handler<First_handler, Handlers ...>::initialize() throw()
+bool Aggregator_handler<First_handler, Handlers ...>::initialize()
 {
     bool tmp1 = First_handler::initialize();
     bool tmp2 = Aggregator_handler<Handlers ...>::check_initialization_and_react();

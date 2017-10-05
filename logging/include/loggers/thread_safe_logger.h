@@ -12,19 +12,19 @@ class Thread_safe_logger : public _impl_Logger<Handler_or_aggregator, void, Hand
 {
     public:
         template <typename ... T>
-        static bool write(T&& ... data) throw()
+        static bool write(T&& ... data)
         {
             return execute_handler(&_impl_Logger<Handler_or_aggregator, void, Handlers ...>::write, std::forward<T>(data) ...);
         }
 
         template <typename ... T>
-        static bool write_endline(T&& ... data) throw()
+        static bool write_endline(T&& ... data)
         {
             return execute_handler(&_impl_Logger<Handler_or_aggregator, void, Handlers ...>::write_endline, std::forward<T>(data) ...);
         }
 
         template <typename ... T>
-        static bool execute_handler(bool (*handler) (T&& ...), T&& ... data) throw()
+        static bool execute_handler(bool (*handler) (T&& ...), T&& ... data)
         {
             bool ret = false;
             _mutex.lock();
@@ -59,13 +59,13 @@ class Thread_safe_aggretator_logger : public Sub_logger, public Thread_safe_logg
 {
     public:
         template <typename ... T>
-        static bool write(T&& ... data) throw()
+        static bool write(T&& ... data)
         {
             return Thread_safe_logger<Sub_logger>::execute_handler(&Sub_logger::write, std::forward<T>(data) ...);
         }
 
         template <typename ... T>
-        static bool write_endline(T&& ... data) throw()
+        static bool write_endline(T&& ... data)
         {
             return Thread_safe_logger<Sub_logger>::execute_handler(&Sub_logger::write_endline, std::forward<T>(data) ...);
         }

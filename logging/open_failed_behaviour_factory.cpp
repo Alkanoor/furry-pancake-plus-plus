@@ -1,8 +1,6 @@
 #include "include/open_failed_behaviour_factory.h"
 #include "include/loggers/common_loggers.h"
 
-#include <iostream>
-
 
 constexpr const char Open_failed_behaviour_factory::exit_keyword[];
 constexpr const char Open_failed_behaviour_factory::print_and_exit_keyword[];
@@ -14,7 +12,7 @@ constexpr const char Open_failed_behaviour_factory::log_and_throw_keyword[];
 constexpr const char Open_failed_behaviour_factory::log_and_exit_keyword[];
 
 
-void Open_failed_behaviour_factory::reacts(const std::string& id, const std::string& filename) throw()
+void Open_failed_behaviour_factory::reacts(const std::string& id, const std::string& filename)
 {
     if(id == "exit")
         exit(1);

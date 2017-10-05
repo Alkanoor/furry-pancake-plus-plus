@@ -16,7 +16,7 @@ class Debug_logger : public _impl_Logger<Handler_or_aggregator, void, Handlers .
         {_debug = debug;}
 
         template <typename ... T>
-        static bool write(T&& ... data) throw()
+        static bool write(T&& ... data)
         {
             if(_debug)
                 return _impl_Logger<Handler_or_aggregator, void, Handlers ...>::write(std::forward<T>(data) ...);
@@ -24,7 +24,7 @@ class Debug_logger : public _impl_Logger<Handler_or_aggregator, void, Handlers .
         }
 
         template <typename ... T>
-        static bool write_endline(T&& ... data) throw()
+        static bool write_endline(T&& ... data)
         {
             if(_debug)
                 return _impl_Logger<Handler_or_aggregator, void, Handlers ...>::write_endline(std::forward<T>(data) ...);
@@ -45,7 +45,7 @@ class Debug_aggretator_logger : public Sub_logger, public Debug_logger<Debug_agg
 {
     public:
         template <typename ... T>
-        static bool write(T&& ... data) throw()
+        static bool write(T&& ... data)
         {
             if(Debug_logger<Debug_aggretator_logger<Sub_logger> >::_debug)
                 return Sub_logger::write(std::forward<T>(data) ...);
@@ -53,7 +53,7 @@ class Debug_aggretator_logger : public Sub_logger, public Debug_logger<Debug_agg
         }
 
         template <typename ... T>
-        static bool write_endline(T&& ... data) throw()
+        static bool write_endline(T&& ... data)
         {
             if(Debug_logger<Debug_aggretator_logger<Sub_logger> >::_debug)
                 return Sub_logger::write_endline(std::forward<T>(data) ...);

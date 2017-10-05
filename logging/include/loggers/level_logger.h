@@ -33,13 +33,13 @@ class Level_logger<Level_handler<Level, Handler, Level_must_be_equal>, Following
         }
 
         template <typename ... T>
-        static bool write(T&& ... data) throw()
+        static bool write(T&& ... data)
         {
             return write_private(_current_level, std::forward<T>(data) ...);
         }
 
         template <typename ... T>
-        static bool write_endline(T&& ... data) throw()
+        static bool write_endline(T&& ... data)
         {
             return write_endline_private(_current_level, std::forward<T>(data) ...);
         }
@@ -54,7 +54,7 @@ class Level_logger<Level_handler<Level, Handler, Level_must_be_equal>, Following
         }
 
         template <typename ... T>
-        static bool write_private(int current_level, T&& ... data) throw()
+        static bool write_private(int current_level, T&& ... data)
         {
             bool tmp1 = true;
             if((!Level_must_be_equal && current_level>=Level) || (Level_must_be_equal && current_level==Level))
@@ -64,7 +64,7 @@ class Level_logger<Level_handler<Level, Handler, Level_must_be_equal>, Following
         }
 
         template <typename ... T>
-        static bool write_endline_private(int current_level, T&& ... data) throw()
+        static bool write_endline_private(int current_level, T&& ... data)
         {
             bool tmp1 = true;
             if((!Level_must_be_equal && current_level>=Level) || (Level_must_be_equal && current_level==Level))
@@ -97,7 +97,7 @@ class Level_logger<Level_handler<Level, Handler, Level_must_be_equal> >
         }
 
         template <typename ... T>
-        static bool write(T&& ... data) throw()
+        static bool write(T&& ... data)
         {
             if((!Level_must_be_equal && _current_level>=Level) || (Level_must_be_equal && _current_level==Level))
                 return Handler::write(std::forward<T>(data) ...);
@@ -105,7 +105,7 @@ class Level_logger<Level_handler<Level, Handler, Level_must_be_equal> >
         }
 
         template <typename ... T>
-        static bool write_endline(T&& ... data) throw()
+        static bool write_endline(T&& ... data)
         {
             if((!Level_must_be_equal && _current_level>=Level) || (Level_must_be_equal && _current_level==Level))
                 return Handler::write_endline(std::forward<T>(data) ...);
@@ -114,7 +114,7 @@ class Level_logger<Level_handler<Level, Handler, Level_must_be_equal> >
 
     protected: // write_private and write_endline_private are declared for compatibility reasons
         template <typename ... T>
-        static bool write_private(int current_level, T&& ... data) throw()
+        static bool write_private(int current_level, T&& ... data)
         {
             if((!Level_must_be_equal && current_level>=Level) || (Level_must_be_equal && current_level==Level))
                 return Handler::write(std::forward<T>(data) ...);
@@ -122,7 +122,7 @@ class Level_logger<Level_handler<Level, Handler, Level_must_be_equal> >
         }
 
         template <typename ... T>
-        static bool write_endline_private(int current_level, T&& ... data) throw()
+        static bool write_endline_private(int current_level, T&& ... data)
         {
             if((!Level_must_be_equal && current_level>=Level) || (Level_must_be_equal && current_level==Level))
                 return Handler::write_endline(std::forward<T>(data) ...);

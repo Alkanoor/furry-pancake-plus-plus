@@ -20,7 +20,7 @@
 class Open_failed_behaviour_factory
 {
     public:
-        static void reacts(const std::string& id, const std::string& filename) throw();
+        static void reacts(const std::string& id, const std::string& filename);
 
         static constexpr const char exit_keyword[] = "exit";
         static constexpr const char print_and_exit_keyword[] = "print_and_exit";

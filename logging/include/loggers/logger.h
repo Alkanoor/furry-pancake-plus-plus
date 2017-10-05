@@ -23,7 +23,7 @@ class _impl_Logger_base<Child, Handler, Handlers ...>
     typedef _impl_Logger_base<Child, Handler, Handlers ...> impl_type;
 
     public:
-        static bool init_handlers(bool force = false) throw()
+        static bool init_handlers(bool force = false)
         {
             if(force || !_has_initialisation_been_launched)
             {
@@ -37,7 +37,7 @@ class _impl_Logger_base<Child, Handler, Handlers ...>
         }
 
         template <typename T>
-        impl_type& operator << (const T& data) throw()
+        impl_type& operator << (const T& data)
         {
             Child::write(data);
             return stream;
@@ -66,28 +66,28 @@ class _impl_Logger
 {
     public:
         template <typename ... T>
-        static bool write(T&& ... data) throw()
+        static bool write(T&& ... data)
         {
             (void)sizeof...(data);
             return true;
         }
 
         template <typename ... T>
-        static bool write_endline(T&& ... data) throw()
+        static bool write_endline(T&& ... data)
         {
             (void)sizeof...(data);
             return true;
         }
 
         template <typename ... T>
-        static bool write_raw(T&& ... data) throw()
+        static bool write_raw(T&& ... data)
         {
             (void)sizeof...(data);
             return true;
         }
 
         template <typename ... T>
-        static bool write_raw_endline(T&& ... data) throw()
+        static bool write_raw_endline(T&& ... data)
         {
             (void)sizeof...(data);
             return true;
@@ -142,7 +142,7 @@ class _impl_Logger<Aggregator, typename std::enable_if<has_aggregate_function<Ag
         }
 
         template <typename ... T>
-        static bool write(T&& ... data) throw()
+        static bool write(T&& ... data)
         {
             bool tmp1 = Handler::write(Aggregator::aggregate(), std::forward<T>(data) ..., Aggregator::aggregate_tail());
             bool tmp2 = Logger<Aggregator, Handlers ...>::write(std::forward<T>(data) ...);
@@ -150,7 +150,7 @@ class _impl_Logger<Aggregator, typename std::enable_if<has_aggregate_function<Ag
         }
 
         template <typename ... T>
-        static bool write_endline(T&& ... data) throw()
+        static bool write_endline(T&& ... data)
         {
             bool tmp1 = Handler::write_endline(Aggregator::aggregate(), std::forward<T>(data) ..., Aggregator::aggregate_tail());
             bool tmp2 = Logger<Aggregator, Handlers ...>::write_endline(std::forward<T>(data) ...);
@@ -158,7 +158,7 @@ class _impl_Logger<Aggregator, typename std::enable_if<has_aggregate_function<Ag
         }
 
         template <typename ... T>
-        static bool write_raw(T&& ... data) throw()
+        static bool write_raw(T&& ... data)
         {
             bool tmp1 = Handler::write(std::forward<T>(data) ...);
             bool tmp2 = Logger<Aggregator, Handlers ...>::write_raw(std::forward<T>(data) ...);
@@ -166,7 +166,7 @@ class _impl_Logger<Aggregator, typename std::enable_if<has_aggregate_function<Ag
         }
 
         template <typename ... T>
-        static bool write_raw_endline(T&& ... data) throw()
+        static bool write_raw_endline(T&& ... data)
         {
             bool tmp1 = Handler::write_endline(std::forward<T>(data) ...);
             bool tmp2 = Logger<Aggregator, Handlers ...>::write_raw_endline(std::forward<T>(data) ...);
@@ -202,7 +202,7 @@ class _impl_Logger<Aggregator, typename std::enable_if<has_aggregate_function<Ag
         }
 
         template <typename ... T>
-        static bool write(T&& ... data) throw()
+        static bool write(T&& ... data)
         {
             bool tmp1 = Handler::write(Aggregator::aggregate(), std::forward<T>(data) ...);
             bool tmp2 = Logger<Aggregator, Handlers ...>::write(std::forward<T>(data) ...);
@@ -210,7 +210,7 @@ class _impl_Logger<Aggregator, typename std::enable_if<has_aggregate_function<Ag
         }
 
         template <typename ... T>
-        static bool write_endline(T&& ... data) throw()
+        static bool write_endline(T&& ... data)
         {
             bool tmp1 = Handler::write_endline(Aggregator::aggregate(), std::forward<T>(data) ...);
             bool tmp2 = Logger<Aggregator, Handlers ...>::write_endline(std::forward<T>(data) ...);
@@ -218,7 +218,7 @@ class _impl_Logger<Aggregator, typename std::enable_if<has_aggregate_function<Ag
         }
 
         template <typename ... T>
-        static bool write_raw(T&& ... data) throw()
+        static bool write_raw(T&& ... data)
         {
             bool tmp1 = Handler::write(std::forward<T>(data) ...);
             bool tmp2 = Logger<Aggregator, Handlers ...>::write_raw(std::forward<T>(data) ...);
@@ -226,7 +226,7 @@ class _impl_Logger<Aggregator, typename std::enable_if<has_aggregate_function<Ag
         }
 
         template <typename ... T>
-        static bool write_raw_endline(T&& ... data) throw()
+        static bool write_raw_endline(T&& ... data)
         {
             bool tmp1 = Handler::write_endline(std::forward<T>(data) ...);
             bool tmp2 = Logger<Aggregator, Handlers ...>::write_raw_endline(std::forward<T>(data) ...);
@@ -262,7 +262,7 @@ class _impl_Logger<Handler, typename std::enable_if<!has_aggregate_function<Hand
         }
 
         template <typename ... T>
-        static bool write(T&& ... data) throw()
+        static bool write(T&& ... data)
         {
             bool tmp1 = Handler::write(std::forward<T>(data) ...);
             bool tmp2 = Logger<Handlers ...>::write(std::forward<T>(data) ...);
@@ -270,7 +270,7 @@ class _impl_Logger<Handler, typename std::enable_if<!has_aggregate_function<Hand
         }
 
         template <typename ... T>
-        static bool write_endline(T&& ... data) throw()
+        static bool write_endline(T&& ... data)
         {
             bool tmp1 = Handler::write_endline(std::forward<T>(data) ...);
             bool tmp2 = Logger<Handlers ...>::write_endline(std::forward<T>(data) ...);
@@ -305,13 +305,13 @@ class _impl_Logger<Handler, typename std::enable_if<!has_aggregate_function<Hand
         }
 
         template <typename ... T>
-        static bool write(T&& ... data) throw()
+        static bool write(T&& ... data)
         {
             return Handler::write(std::forward<T>(data) ...);
         }
 
         template <typename ... T>
-        static bool write_endline(T&& ... data) throw()
+        static bool write_endline(T&& ... data)
         {
             return Handler::write_endline(std::forward<T>(data) ...);
         }

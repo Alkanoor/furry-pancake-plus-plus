@@ -54,12 +54,12 @@ typedef Logger<Date_aggregator<String_header<fatal> >,
                Stderr_handler,
                Safe_handler<File_handler_fail_behaviour<fatal_filename, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::throw_keyword> > > fatal_error_logger;
 
-typedef Dynamic_file_handler_fail_behaviour<String_header<base_dir, Date_aggregator<String_header<severe_filename> > >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::log_and_throw_keyword, true> dated_severe_handler;
-typedef Dynamic_file_handler_fail_behaviour<String_header<base_dir, Date_aggregator<String_header<error_filename> > >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::log_and_throw_keyword, true> dated_error_handler;
-typedef Dynamic_file_handler_fail_behaviour<String_header<base_dir, Date_aggregator<String_header<warning_filename> > >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::log_keyword, true> dated_warning_handler;
-typedef Dynamic_file_handler_fail_behaviour<String_header<base_dir, Date_aggregator<String_header<info_filename> > >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::log_keyword, true> dated_info_handler;
-typedef Dynamic_file_handler_fail_behaviour<String_header<base_dir, String_header<main_errors_filename> >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::throw_keyword> main_errors_handler;
-typedef Dynamic_file_handler_fail_behaviour<String_header<base_dir, String_header<debug_filename> >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::log_keyword, true> debug_handler;
+typedef Dynamic_header_file_handler_fail_behaviour<String_header<base_dir, Date_aggregator<String_header<severe_filename> > >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::log_and_throw_keyword, true> dated_severe_handler;
+typedef Dynamic_header_file_handler_fail_behaviour<String_header<base_dir, Date_aggregator<String_header<error_filename> > >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::log_and_throw_keyword, true> dated_error_handler;
+typedef Dynamic_header_file_handler_fail_behaviour<String_header<base_dir, Date_aggregator<String_header<warning_filename> > >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::log_keyword, true> dated_warning_handler;
+typedef Dynamic_header_file_handler_fail_behaviour<String_header<base_dir, Date_aggregator<String_header<info_filename> > >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::log_keyword, true> dated_info_handler;
+typedef Dynamic_header_file_handler_fail_behaviour<String_header<base_dir, String_header<main_errors_filename> >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::throw_keyword> main_errors_handler;
+typedef Dynamic_header_file_handler_fail_behaviour<String_header<base_dir, String_header<debug_filename> >, Open_failed_behaviour_factory, const char*, Open_failed_behaviour_factory::log_keyword, true> debug_handler;
 
 typedef Safe_handler<dated_severe_handler> safe_dated_severe_handler;
 typedef Safe_handler<dated_error_handler> safe_dated_error_handler;

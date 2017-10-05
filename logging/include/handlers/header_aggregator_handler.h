@@ -28,19 +28,19 @@ class _impl_Header_aggregator<Aggregator, Child, typename std::enable_if<has_agg
 
     public:
         template <typename ... T>
-        static bool _impl_write(T&& ... data) throw()
+        static bool _impl_write(T&& ... data)
         {
             return Child::_impl_write(Aggregator::aggregate(), std::forward<T>(data) ..., Aggregator::aggregate_tail());
         }
 
         template <typename ... T>
-        static bool _impl_write_endline(T&& ... data) throw()
+        static bool _impl_write_endline(T&& ... data)
         {
             return Child::_impl_write_endline(Aggregator::aggregate(), std::forward<T>(data) ..., Aggregator::aggregate_tail());
         }
 
     private:
-        static bool initialize() throw()
+        static bool initialize()
         {
             return Child::check_initialization_and_react();
         }
@@ -54,19 +54,19 @@ class _impl_Header_aggregator<Aggregator, Child, typename std::enable_if<has_agg
 
     public:
         template <typename ... T>
-        static bool _impl_write(T&& ... data) throw()
+        static bool _impl_write(T&& ... data)
         {
             return Child::_impl_write(Aggregator::aggregate(), std::forward<T>(data) ...);
         }
 
         template <typename ... T>
-        static bool _impl_write_endline(T&& ... data) throw()
+        static bool _impl_write_endline(T&& ... data)
         {
             return Child::_impl_write_endline(Aggregator::aggregate(), std::forward<T>(data) ...);
         }
 
     private:
-        static bool initialize() throw()
+        static bool initialize()
         {
             return Child::check_initialization_and_react();
         }
