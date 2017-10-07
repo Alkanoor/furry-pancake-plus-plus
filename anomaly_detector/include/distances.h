@@ -11,10 +11,22 @@ namespace Distance
     }
 
     template <template <typename> class C, typename T, size_t N>
-    T euclidian_squared_distance(const C<T>& x, const C<T>& y)
+    T euclidian_squared_distance(const C<T, N>& x, const C<T, N>& y)
     {
         T res = 0;
         for(size_t i=0; i<N; i++)
+        {
+            T tmp = x.get_coord(i)-y.get_coord(i);
+            res += tmp*tmp;
+        }
+        return res;
+    }
+
+    template <template <typename> class C, typename T>
+    T euclidian_squared_distance(const C<T>& x, const C<T>& y)
+    {
+        T res = 0;
+        for(size_t i=0; i<x.number_coords(); i++)
         {
             T tmp = x.get_coord(i)-y.get_coord(i);
             res += tmp*tmp;

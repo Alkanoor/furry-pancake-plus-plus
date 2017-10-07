@@ -126,5 +126,24 @@ int main()
         std::cout<<"Exception caught (3): "<<e.what()<<std::endl;
     }
 
+    debug_logger::set_level(GREAT);
+    debug_logger::write_endline("This is great");
+    debug_logger::set_level(SUPER);
+    debug_logger::write_endline("This is super");
+    debug_logger::set_level(GOOD);
+    debug_logger::write_endline("This is good");
+    debug_logger::set_level(QUESTION);
+    debug_logger::write_endline("This is question");
+    debug_logger::set_level(SURPRISING);
+    debug_logger::write_endline("This is surprising");
+    debug_logger::set_level(NEUTRAL);
+    debug_logger::write_endline("This is neutral");
+    debug_logger::set_level(NEGATIVE);
+    debug_logger::write_endline("This is negative");
+    debug_logger::set_level(BAD);
+    debug_logger::write_endline("This is bad");
+    debug_logger::set_level(CRITICAL);
+    debug_logger::write_endline("This is critical");
+
     return 0;
 }

@@ -23,6 +23,16 @@
 #define ERROR   2
 #define SEVERE  3
 
+#define GREAT      5
+#define SUPER      4
+#define GOOD       3
+#define QUESTION   2
+#define SURPRISING 1
+#define NEUTRAL    0
+#define NEGATIVE  -1
+#define BAD       -2
+#define CRITICAL  -3
+
 
 static constexpr const char base_dir[] = "logs/";
 
@@ -41,6 +51,15 @@ static constexpr const char error_filename[] = "_errors.log";
 static constexpr const char warning_filename[] = "_warning.log";
 static constexpr const char info_filename[] = "_info.log";
 static constexpr const char debug_filename[] = "current_debug.log";
+static constexpr const char great[] = "[+++] ";
+static constexpr const char super[] = "[++]  ";
+static constexpr const char good[] = "[+]   ";
+static constexpr const char question[] = "[?]   ";
+static constexpr const char surprising[] = "[!]   ";
+static constexpr const char neutral[] = "[.]   ";
+static constexpr const char negative[] = "[-]   ";
+static constexpr const char bad[] = "[--]  ";
+static constexpr const char critical[] = "[---] ";
 
 
 typedef Logger<Date_aggregator<>, Stdout_handler>                                   basic_timed_logger;
@@ -185,9 +204,23 @@ typedef Level_logger<Level_handler<0, Header_aggregator_handler<Date_aggregator<
                      Level_handler<2, Header_aggregator_handler<Date_aggregator<String_header<error> >, safe_dated_error_handler>, true>, Level_handler<2, safe_dated_errors_orange_logger, true>,
                      Level_handler<3, Header_aggregator_handler<Date_aggregator<String_header<severe> >, safe_dated_severe_handler>, true>, Level_handler<3, safe_dated_severe_red_logger, true> > safe_dated_level_logger;
 
-typedef Thread_safe_aggretator_logger<thread_safe_debug_logger> debug_logger;
 typedef Debug_aggretator_logger<Thread_safe_aggretator_logger<safe_level_logger> > logger;
 typedef Debug_aggretator_logger<Thread_safe_aggretator_logger<safe_dated_level_logger> > dated_logger;
+
+typedef Aggregator_handler<Safe_handler<Stdout_handler>, safe_debug_handler> stdout_and_file_debug_handler;
+
+template <typename T>
+using nice_level_logger = Level_logger<Level_handler<GREAT, Header_handler<great, T>, true>,
+                                       Level_handler<SUPER, Header_handler<super, T>, true>,
+                                       Level_handler<GOOD, Header_handler<good, T>, true>,
+                                       Level_handler<QUESTION, Header_handler<question, T>, true>,
+                                       Level_handler<SURPRISING, Header_handler<surprising, T>, true>,
+                                       Level_handler<NEUTRAL, Header_handler<neutral, T>, true>,
+                                       Level_handler<NEGATIVE, Header_handler<negative, T>, true>,
+                                       Level_handler<BAD, Header_handler<bad, T>, true>,
+                                       Level_handler<CRITICAL, Header_handler<critical, T>, true> >;
+
+typedef Thread_safe_aggretator_logger<Debug_aggretator_logger<nice_level_logger<stdout_and_file_debug_handler> > > debug_logger;
 
 
 #endif
