@@ -1,5 +1,5 @@
-#ifndef OSTREAM_WRITABLE_H_INCLUDED
-#define OSTREAM_WRITABLE_H_INCLUDED
+#ifndef OSTREAM_WRITABLE_H
+#define OSTREAM_WRITABLE_H
 
 
 #include <type_traits>
@@ -89,6 +89,46 @@ class Writable_Ostream<std::vector<std::vector<T> > >
         unsigned char begin_;
         unsigned char end_;
         bool endline_;
+};
+
+template <size_t N, typename T>
+class Writable_Ostream<std::array<T, N> >
+{
+    public:
+        Writable_Ostream(const std::array<T, N>& to_print, const std::string& sep = ", ", unsigned char beg = '[', unsigned char end = ']') :
+            tmp_(to_print),
+            separator_(sep),
+            begin_(beg),
+            end_(end)
+        {}
+
+        void log(std::ostream& os) const
+        {
+            os<<begin_;
+            if(!tmp_.size())
+            {
+                os<<end_;
+                return;
+            }
+            auto prev = tmp_[0];
+            bool print = false;
+            for(auto i : tmp_)
+            {
+                if(print)
+                    os<<prev<<separator_;
+                else
+                    print = true;
+                prev = i;
+            }
+            os<<prev;
+            os<<end_;
+        }
+
+    private:
+        std::array<T, N> tmp_;
+        std::string separator_;
+        unsigned char begin_;
+        unsigned char end_;
 };
 
 template <typename T, typename U>

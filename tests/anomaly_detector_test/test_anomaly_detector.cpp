@@ -1,5 +1,5 @@
-#include "../../utils/include/ostream_writable.hpp"
-#include "../include/anomaly_detector.hpp"
+#include "../../anomaly_detector/include/anomaly_detector.h"
+#include "../../logging/include/common_loggers.h"
 #include <cstdlib>
 #include <cstdio>
 #include <ctime>
