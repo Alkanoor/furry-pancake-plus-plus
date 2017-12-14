@@ -1,10 +1,10 @@
-#include <cmath>
-
 #include "selection/include/absolute_selection.h"
 #include "selection/include/quality_selection.h"
 #include "selection/include/multi_selection.h"
 #include "selection/include/rank_selection.h"
 #include "selection/include/elit_selection.h"
+
+#include <cmath>
 
 
 float predicate(int i, int N)

@@ -1,6 +1,6 @@
-#include "../../logging/include/handlers/pool_ostream_handler.h"
-#include "../../logging/include/handlers/dynamic_file_handler.h"
-#include "../../logging/include/loggers/common_loggers.h"
+#include "logging/include/handlers/pool_ostream_handler.h"
+#include "logging/include/handlers/dynamic_file_handler.h"
+#include "logging/include/loggers/common_loggers.h"
 
 
 static constexpr const char ok[] = "ok";
