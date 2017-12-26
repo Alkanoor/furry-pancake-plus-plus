@@ -14,7 +14,7 @@ int main(int argc, char* argv[])
     (void)argc;
     (void)argv;
 
-    logger::debug(DEBUG);
+    logger.debug(DEBUG);
 
     Simulated_annealing_on_PID experiment(  std::bind(reset_pid_fake, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3),
                                             std::bind(move_and_measure_fake, std::placeholders::_1, std::placeholders::_2),

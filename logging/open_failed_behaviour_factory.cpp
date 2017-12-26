@@ -1,6 +1,8 @@
 #include "include/open_failed_behaviour_factory.h"
 #include "include/loggers/common_loggers.h"
 
+#include <iostream>
+
 
 constexpr const char Open_failed_behaviour_factory::exit_keyword[];
 constexpr const char Open_failed_behaviour_factory::print_and_exit_keyword[];
@@ -24,11 +26,11 @@ void Open_failed_behaviour_factory::reacts(const std::string& id, const std::str
     else if(id == "print")
         std::cerr<<"Unable to open file \""<<filename<<"\""<<std::endl;
     else if(id == "throw")
-        throw std::runtime_error("Error: Unable to open file \""+filename+"\" (you can try to create directory to solve the issue)");
+        throw std::runtime_error("Error: Unable to open file \""+filename+"\"");
     else if(id == "print_and_throw")
     {
         std::cerr<<"Unable to open file "<<filename<<std::endl;
-        throw std::runtime_error("Error: Unable to open file \""+filename+"\" (you can try to create directory to solve the issue)");
+        throw std::runtime_error("Error: Unable to open file \""+filename+"\"  (you can try to create directory to solve the issue)");
     }
     else if(id == "log")
     {
