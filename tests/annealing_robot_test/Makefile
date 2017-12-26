@@ -1,4 +1,6 @@
-SRC = test_annealing_robot.cpp
+OBJ_DIRS = ../../logging
+OBJS = $(addsuffix /obj/*.o, $(OBJ_DIRS))
+SRC = test_annealing_robot.cpp fake_actions.cpp simulated_annealing_on_pid.cpp
 
 CC = g++
 CFLAGS = -Wall -Werror -Wextra -O1 -std=c++14 -I../.. -g
@@ -6,6 +8,8 @@ LDFLAGS =
 
 BUILD = bin
 EXEC = $(BUILD)/test
+
+ADDITIONAL = logs
 
 
 all: $(EXEC)
@@ -30,3 +34,8 @@ clean: clean-soft
 	@for dir in $(OBJ_DIRS) ; do \
         make -C $$dir clean ; \
     done
+
+
+ifeq ($(wildcard $(OBJ_DIRS)/obj/*.o),)
+.PHONY: $(OBJ_DIRS)
+endif
